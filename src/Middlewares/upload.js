@@ -45,6 +45,7 @@ const storage = multer.diskStorage({
      const maxFileSize= 15 * 1024 * 1024;
     if (allowedMimeTypes.includes(file.mimetype) && ActualFileSize <= maxFileSize)
     {
+      // accept the file 
         cb(null,true)
     }
 

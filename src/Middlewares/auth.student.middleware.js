@@ -11,7 +11,7 @@ const verifyStudentJwt=asyncHandler(async(req,res,next)=>{
     }
 
    const decodedToken= Jwt.verify(token,process.env.ACCESS_TOKEN_SECRET)
-
+// console.log("the decoded tecah token is ")
   const user= await Student.findById(decodedToken._id).select("-password")
 
   if(!user)
