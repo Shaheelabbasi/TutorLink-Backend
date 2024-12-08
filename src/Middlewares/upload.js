@@ -2,9 +2,7 @@ const multer=require("multer")
 const path=require("path")
 const fs=require("fs")
 
-function setDestination(req, file, cb){
-
-    //    
+function setDestination(req, file, cb){  
   let uploadDir=null
 // for handling the profile picture
  if (file.fieldname =="profile")
@@ -23,45 +21,77 @@ function setDestination(req, file, cb){
     fs.mkdirSync(uploadDir);
     cb(null,uploadDir)
    }
-}
-
+  }
+   if (file.fieldname =="thumbnail")
+   {
+    uploadDir=path.join(__dirname,"../../Public/CourseThumbnail")
+    if (fs.existsSync(uploadDir))
+    {
+      cb(null,uploadDir)
+    }
+    else
+    {
+      fs.mkdirSync(uploadDir)
+      cb(null,uploadDir)
+    }
+   }
+   if (file.fieldname =="lectures")
+    {
+     uploadDir=path.join(__dirname,"../../Public/Lectures")
+     if (fs.existsSync(uploadDir))
+     {
+       cb(null,uploadDir)
+     }
+     else
+     {
+       fs.mkdirSync(uploadDir)
+       cb(null,uploadDir)
+     }
+    }
 
 }
 const storage = multer.diskStorage({
     destination: setDestination,
     filename: function (req, file, cb) {
+    
       const uniqueSuffix = Date.now() + '-' 
-      cb(null, file.fieldname + '-' + uniqueSuffix)
+      cb(null, uniqueSuffix + '-' + file.fieldname)
     }
   })
   
 
   const fileFilter=(req,file,cb)=>{
 
-    //  content length is string so we have to convert it
-    // file .size is not avb here so we use this
-    const ActualFileSize=parseInt(req.headers['content-length'])
-    const allowedMimeTypes=["image/png","image/jpeg","application/pdf","image/jpg","application/vnd.openxmlformats-officedocument.presentationml.presentation" ]
-     const maxFileSize= 15 * 1024 * 1024;
-    if (allowedMimeTypes.includes(file.mimetype) && ActualFileSize <= maxFileSize)
-    {
-      // accept the file 
-        cb(null,true)
-    }
+    const allowedImageTypes=["image/png", "image/jpeg", "image/jpg"]
+    const allowedLectureTypes=[
+      "application/pdf",
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+      "application/vnd.ms-powerpoint"
+    ]
+     if(file.fieldname =="lectures")
+     { 
+      if( !allowedLectureTypes.includes(file.mimetype))
+      {
+       return cb(new Error("For lectures only pdf and ppts are allowed"))
+      }
+     }
+   
 
-    else if(! allowedMimeTypes.includes(file.mimetype))
+    else if(file.fieldname =="thumbnail" || file.fieldname =="profilepicture")
     {
+      if(!allowedImageTypes.includes(file.mimetype))
         // reject the file and throw error
-        cb(new Error("Only Images pdfs and ppts are allowed "),false)
+       return cb(new Error(`Only Images Png ,jpg and Jpeg are allowed for ${file.fieldname}`),false)
     }
-    else if (ActualFileSize >maxFileSize)
-    {
-      cb (new Error("File size should be less than 15 mb"))
-    }
+    // accept the file
+    cb(null,true)
   }
   const fileUpload = multer({ 
   fileFilter:fileFilter,
-  storage: storage
+  storage: storage,
+  limits:{
+    fileSize:15*1024*1024
+  }
  })
 
 module.exports={

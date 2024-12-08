@@ -8,14 +8,13 @@ const ApiResponse = require("../Utils/Apiresponse.js")
 
 const addEducationalDetails = asyncHandler(async (req, res) => {
 
-    console.log("education function called")
+    // console.log("education function called")
     const {
         fieldOfStudy,
         degreeLevel,
         Institute,
         startYear,
         endYear,
-        grade
     } = req.body
 
     if ([fieldOfStudy, degreeLevel, Institute, startYear, endYear, grade].some((value) => value.trim() == "")) {
@@ -42,11 +41,12 @@ const addEducationalDetails = asyncHandler(async (req, res) => {
         throw new ApiError(400, "please enter valid year values for Masters")
     }
 
+    
 
     // find already existing educational details
 
     const existingEducationDetails = await EducationModel.findOne({
-        TeacherId: req.Teacher._id
+        TeacherId: req.user._id
     })
 
 
@@ -54,13 +54,12 @@ const addEducationalDetails = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Educational details are already added")
     }
     const addedEducation = await EducationModel.create({
-        TeacherId: req.Teacher?._id,
+        TeacherId: req.user?._id,
         fieldOfStudy,
         degreeLevel,
         Institute,
         startYear,
         endYear,
-        grade
     })
     return res.json(
         new ApiResponse(
@@ -80,7 +79,6 @@ const updateEducationalDetails = asyncHandler(async (req, res) => {
         Institute,
         startYear,
         endYear,
-        grade
     } = req.body
 
     if ([fieldOfStudy, degreeLevel, Institute, startYear, endYear, grade].some((value) => value?.trim() == "")) {
@@ -146,7 +144,7 @@ const updateEducationalDetails = asyncHandler(async (req, res) => {
 
 const GetEducationalDetails=asyncHandler(async(req,res)=>{
     const EducationalDetails=await EducationModel.findOne({
-        TeacherId:req.Teacher._id
+        TeacherId:req.user?._id
     }).populate("TeacherId","-email -password -LinkedInProfile")
   res.json(
     new ApiResponse(

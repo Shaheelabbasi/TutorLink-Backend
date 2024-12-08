@@ -1,7 +1,7 @@
 const mongoose=require("mongoose")
 const bcrypt=require("bcrypt")
-const jwt=require('jsonwebtoken')
-const TeacherSchema=mongoose.Schema({
+const jwt=require("jsonwebtoken")
+const UserSchema=new mongoose.Schema({
     
     username:{
         type:String,
@@ -15,17 +15,20 @@ const TeacherSchema=mongoose.Schema({
         type:String,
         required:true
       },
-    LinkedInProfile:{
-        type:String,
-    },
     Profilepicture:{
         type:String,
         default:"../Public/profiles/user.jpg"
-    } 
+    },
+    role:{
+        type:String,
+        enum:['admin','student','teacher'],
+        required:true
+    }
 
-})
+},{timestamps:true})
 
-TeacherSchema.pre("save",async function(next){
+
+UserSchema.pre("save",async function(next){
     //this: Refers to the current Mongoose document instance that is being saved or updated.
         if(this.isModified("password"))
         {
@@ -36,13 +39,13 @@ TeacherSchema.pre("save",async function(next){
     })
     
     
-    TeacherSchema.methods.IspasswordCorrect=async function(password)
+    UserSchema.methods.IspasswordCorrect=async function(password)
     {
         const status=await bcrypt.compare(password,this.password)
         return status;
     }
     
-    TeacherSchema.methods.GenerateAccessToken=function () {
+    UserSchema.methods.GenerateAccessToken=function () {
         return jwt.sign(
             {
             _id:this._id,
@@ -52,12 +55,12 @@ TeacherSchema.pre("save",async function(next){
         {
             expiresIn:"1d"
         }
-        
+       
     )
     }
 
-const Teacher=mongoose.model("Teacher",TeacherSchema)
+const User=mongoose.model("User",UserSchema)
 
 module.exports={
-    Teacher
+    User
 }
