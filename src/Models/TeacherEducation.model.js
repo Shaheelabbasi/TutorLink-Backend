@@ -1,5 +1,5 @@
 const mongoose = require("mongoose")
-const StudentSchema = new mongoose.Schema({
+const EducationSchema = new mongoose.Schema({
 
   TeacherId: {
     type: mongoose.Types.ObjectId,
@@ -12,7 +12,7 @@ const StudentSchema = new mongoose.Schema({
   degreeLevel: {
     type: String,
     required: true,
-    enum: ["Associate", "Bachelor", "Masters", "Doctorate", "Diploma", "Certification"]
+    enum: ["Associate", "Bachelors", "Masters", "Doctorate", "Diploma", "Certification"]
   },
   Institute: {
     type: String,
@@ -25,14 +25,10 @@ const StudentSchema = new mongoose.Schema({
   endYear: {
     type: String,
     required: true
-  },
-  grade: {
-    type: String,
-    required: true
   }
 })
 
-const EducationModel = mongoose.model("Teacher_Education", StudentSchema)
+const EducationModel = mongoose.model("Teacher_Education", EducationSchema)
 
 module.exports = {
   EducationModel

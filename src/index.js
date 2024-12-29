@@ -1,8 +1,6 @@
-require("dotenv").config()
+require("dotenv").config({path:"../.env"})
 const app = require('./app.js');
 const { connectDb } = require('./Db/connect.js');
-
-
 const PORT=process.env.PORT
 connectDb()
   .then(() => {

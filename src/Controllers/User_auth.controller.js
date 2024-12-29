@@ -3,6 +3,7 @@ const {asyncHandler}=require("../Utils/asyncHandler.js")
 const ApiError=require("../Utils/ApiError.js")
 const ApiResponse=require("../Utils/Apiresponse.js")
 const { uploadOnCloudnary } = require("../Utils/cloudinary.js")
+const {TeacherProfile}=require("../Models/Teacherprofile.model.js")
 
 const UserSignUp=asyncHandler(async(req,res)=>{
 
@@ -40,13 +41,24 @@ if (Profilepicture)
     throw new ApiError(500, "something went wrong while registering the User");
   }
 
+  if(role.toLowerCase() =="teacher")
+  {
+const teacherprofiledata={
+  user:newUser?._id
+}
+const teacherProfile=await TeacherProfile.create(teacherprofiledata)
+if(!teacherProfile)
+{
+  throw new ApiError(500, "something went wrong while creating teacher profile");
+}
+  }
+
   const safeUser = await User.findById(newUser._id).select("-password -email");
 
   return res.json(new ApiResponse(200, safeUser, "User created successfully"));
 
 
 })
-
 
 
 

@@ -2,7 +2,7 @@ const { EducationModel } = require("../Models/TeacherEducation.model.js")
 const { asyncHandler } = require("../Utils/asyncHandler.js")
 const ApiError = require("../Utils/ApiError.js")
 const ApiResponse = require("../Utils/Apiresponse.js")
-
+const {TeacherProfile}=require("../Models/Teacherprofile.model.js")
 
 
 
@@ -17,7 +17,8 @@ const addEducationalDetails = asyncHandler(async (req, res) => {
         endYear,
     } = req.body
 
-    if ([fieldOfStudy, degreeLevel, Institute, startYear, endYear, grade].some((value) => value.trim() == "")) {
+
+    if ([fieldOfStudy, degreeLevel, Institute, startYear, endYear].some((value) => value.trim() == "")) {
         throw new ApiError(400, "All the fields are required")
     }
 
@@ -41,7 +42,8 @@ const addEducationalDetails = asyncHandler(async (req, res) => {
         throw new ApiError(400, "please enter valid year values for Masters")
     }
 
-    
+
+
 
     // find already existing educational details
 
@@ -61,6 +63,21 @@ const addEducationalDetails = asyncHandler(async (req, res) => {
         startYear,
         endYear,
     })
+
+    if(req.user.role.toLowerCase() =="teacher")
+    {
+        // finding the specifc teacher profile
+        const teacherProfile = await TeacherProfile.findOne({
+            user: req.user._id,
+        });
+
+        if (!teacherProfile) {
+            throw new ApiError(404, "Teacher profile not found");
+        }
+
+        teacherProfile.education.push(addedEducation._id);
+        await teacherProfile.save();
+    }
     return res.json(
         new ApiResponse(
             201,

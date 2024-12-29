@@ -4,6 +4,7 @@ const ApiError = require("../Utils/ApiError.js")
 const ApiResponse = require("../Utils/Apiresponse.js")
 const {uploadOnCloudnary}=require('../Utils/cloudinary.js')
 const { Course } = require("../Models/Course.model.js")
+const {TeacherProfile}=require("../Models/Teacherprofile.model.js")
 
 const createCourse=asyncHandler(async(req,res)=>{
    const courseLimit=2
@@ -14,7 +15,6 @@ const createCourse=asyncHandler(async(req,res)=>{
     }
 
     const {
-        Instructor,
         courseTitle,
         description,
         price,
@@ -25,7 +25,7 @@ const createCourse=asyncHandler(async(req,res)=>{
     }=req.body
     
 
-    if(!Instructor || !courseTitle || !description  || !price || !durationInMonths || !enrollmentStart || !enrollmentEnd){
+    if(!courseTitle || !description  || !price || !durationInMonths || !enrollmentStart || !enrollmentEnd){
         throw new ApiError(400,"All fields are required")
     }
 
@@ -75,6 +75,22 @@ if (!createdCourse)
 {
     throw new ApiError(500,"something went wrong while creating the course")
 }
+
+
+if(req.user.role.toLowerCase() =="teacher")
+    {
+        // finding the specifc teacher profile
+        const teacherProfile = await TeacherProfile.findOne({
+            user: req.user._id,
+        });
+
+        if (!teacherProfile) {
+            throw new ApiError(404, "Teacher profile not found");
+        }
+
+        teacherProfile.courses.push(createdCourse._id);
+        await teacherProfile.save();
+    }
 
 return res.json(
     new ApiResponse(
@@ -193,16 +209,35 @@ const GetAllCourses=asyncHandler(async(req,res)=>{
 
 
 
+
 const searchCourse=asyncHandler(async(req,res)=>{
     const{
-        title
-    }=req.body;
+        title,
+        level
+    }=req.query;
 
-    const searchResult=await Course.find({
-        courseTitle:{$regex:title,$options:"i"}
+    if(!title || !level)
+        {
+            throw new ApiError("Search criteria is required")
+        } 
+const searchquery={};
+if(title)
+{
+    searchquery.courseTitle={$regex:new RegExp(title,'i')}
+}
+if(level)
+{
+    searchquery.courselevel={$regex:new RegExp(level,'i')}
+}
+
+// excluded lectures before enrollment
+// lectures will be made available after enrollment
+    const searchResult=await Course.find(searchquery,"-lectures -createdAt -updatedAt").populate({
+         path:"Instructor",
+        select:"username Profilepicture"
     })
 
-    if(!searchResult)
+    if(!searchResult.length>0)
     {
         throw new ApiError(400,"No matching courses found")
     }

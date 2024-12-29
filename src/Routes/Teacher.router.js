@@ -9,6 +9,8 @@ const { createCourse,addLectures,updateCourseDetails ,GetAllCourses} = require("
 const verifyJwt = require('../Middlewares/auth.middleware.js')
 const { handleMulterError } = require("../Middlewares/errorhandler.middleware.js")
 
+const {ViewTeacherProfile}=require("../Controllers/Profile.controller.js")
+
 // in case of error in fileupload Signup is skipped and automatically 
 // last error handler is called 
 TeacherRouter.post("/signup", fileUpload.single("profilepicture"), UserSignUp, (error, req, res) => {
@@ -27,7 +29,7 @@ TeacherRouter.patch("/updateEducationDetails", verifyJwt, updateEducationalDetai
 TeacherRouter.get("/getEducationDetails", verifyJwt, GetEducationalDetails)
 TeacherRouter.post("/create-course", verifyJwt, fileUpload.fields([{ name: 'thumbnail', maxCount: 1 }, { name: "lectures", maxCount: 5 }]), createCourse, handleMulterError)
 TeacherRouter.post("/addcourse-lectures", verifyJwt, fileUpload.fields([{ name: "lectures", maxCount: 5 }]), addLectures, handleMulterError)
-TeacherRouter.post("/addcourse-lectures", verifyJwt, fileUpload.fields([{ name: "lectures", maxCount: 5 }]), addLectures, handleMulterError)
+TeacherRouter.get("/view-profile",verifyJwt, ViewTeacherProfile)
 
 
 
