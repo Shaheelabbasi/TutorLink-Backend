@@ -15,6 +15,7 @@ app.use(cors({
 // Set up JSON and URL-encoded form body parsing
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static("Public"))
 // Routers
 const {StudentRouter}=require("./Routes/Student.router.js")
 const {TeacherRouter}=require("./Routes/Teacher.router.js")

@@ -19,13 +19,13 @@ const EnrollmentSchema=new mongoose.Schema({
     status:{
         type:String,
         enum: ["active", "completed"],
-      default: "active",
+        default: "active",
     },
     PaymentStatus: {
         type: String,
         enum: ["pending", "completed", "failed"],
         default: "pending",
-      },
+      }
   
 
 },{timestamps:true})
@@ -34,8 +34,8 @@ const EnrollmentSchema=new mongoose.Schema({
 
 
 
-const Enrollment=mongoose.model("Enrollment",EnrollmentSchema)
+const CourseEnrollment=mongoose.model("Enrollment",EnrollmentSchema)
 
 module.exports={
-    Enrollment
+  CourseEnrollment
 }

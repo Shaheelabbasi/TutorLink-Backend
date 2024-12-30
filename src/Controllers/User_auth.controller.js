@@ -7,14 +7,14 @@ const {TeacherProfile}=require("../Models/Teacherprofile.model.js")
 
 const UserSignUp=asyncHandler(async(req,res)=>{
 
-    const { username, email, password,Profilepicture,role} = req.body;
+    const {username, email, password,Profilepicture,role} = req.body;
 
     if (!username || !email || !password || !role)
     {
       throw new ApiError(400,"please provide all the fields")
     }
   if ([username, email, password,role].some((field) => field.trim() === "")) {
-    throw new ApiError(400,"All fields are empty");
+    throw new ApiError(400,"All fields are required");
   }
 
   const existingUser = await User.findOne({
@@ -24,7 +24,7 @@ const UserSignUp=asyncHandler(async(req,res)=>{
     throw new ApiError(400, "Username or email already exists");
   }
   let profile=null
-if (Profilepicture)
+if (Profilepicture && req.file)
 {
     profile=await uploadOnCloudnary(req.file.path)
 }

@@ -16,7 +16,7 @@ const CourseSchema=new mongoose.Schema({
       },
     Thumbnail:{
         type:String,
-        default:"./CourseThumbnail/user.jpg"
+        default:"./CourseThumbnail/thumbnail.jpg"
     },
     price:{
         type:Number,

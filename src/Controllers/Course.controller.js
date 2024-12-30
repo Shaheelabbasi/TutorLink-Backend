@@ -1,13 +1,14 @@
-const { EducationModel } = require("../Models/TeacherEducation.model.js")
+
 const { asyncHandler } = require("../Utils/asyncHandler.js")
 const ApiError = require("../Utils/ApiError.js")
 const ApiResponse = require("../Utils/Apiresponse.js")
 const {uploadOnCloudnary}=require('../Utils/cloudinary.js')
 const { Course } = require("../Models/Course.model.js")
 const {TeacherProfile}=require("../Models/Teacherprofile.model.js")
-
+const {CourseEnrollment}=require("../Models/Enrollment.model.js")
 const createCourse=asyncHandler(async(req,res)=>{
-   const courseLimit=2
+
+//    const courseLimit=2
 
     if(!req.files['lectures'])
     {
@@ -38,11 +39,11 @@ const createCourse=asyncHandler(async(req,res)=>{
         throw new ApiError(400,`course with title "${courseTitle}" already exists`)
     }
 
-    const courseCount=await Course.countDocuments({Instructor:req.user?._id})
- if(courseCount >=courseLimit)
- {
-    throw new ApiError(400,"You can add only up to two courses")
- }
+//     const courseCount=await Course.countDocuments({Instructor:req.user?._id})
+//  if(courseCount >=courseLimit)
+//  {
+//     throw new ApiError(400,"You can add only up to two courses")
+//  }
 const ThumbnailFilepath=req.files['thumbnail'][0].path
 let Thumbnailfile=null
   if (ThumbnailFilepath)
@@ -252,10 +253,72 @@ if(level)
 })
 
 
+
+const GetCourseLectures=asyncHandler(async(req,res)=>{
+
+const {courseId}=req.body;
+
+if(!courseId)
+{
+    throw new ApiError(400,"courseId is required")
+}
+
+
+const CousreData=await Course.findById(courseId)
+
+
+res.json(new ApiResponse(
+    200,
+    CousreData.lectures,
+    "successfully fetched lectures"
+))
+
+
+})
+
+
+const ViewCourseEnrollments=asyncHandler(async(req,res)=>{
+
+    //teacher can see has someone enrolled in his course
+    const courses=await Course.find({
+      Instructor:req.user?._id
+    })
+
+    if(!courses.length)
+    {
+        throw new ApiError(400,"no courses found for this teacher")
+    }
+
+    const enrollments = await Promise.all(
+        courses.map(async (course) => {
+            return await CourseEnrollment.find({
+                CourseId: course._id,
+                status: "active"
+            })
+            .populate("StudentId", "username email")
+            .populate("CourseId", "courseTitle");
+        })
+    );
+ 
+  //destructuring to remove the double array
+const [finalenrols]=enrollments
+
+
+    res.json( new ApiResponse 
+         (
+         200,
+        finalenrols,
+        "successfully fetched enrollments"
+    )
+    )
+})
+
 module.exports={
     createCourse,
     addLectures,
     updateCourseDetails,
     GetAllCourses,
-    searchCourse
+    searchCourse,
+    GetCourseLectures,
+    ViewCourseEnrollments
 }
