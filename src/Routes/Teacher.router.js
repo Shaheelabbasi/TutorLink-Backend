@@ -23,6 +23,7 @@ TeacherRouter.post("/signup", fileUpload.single("profilepicture"), UserSignUp, (
         })}
 })
 TeacherRouter.post("/login", UserSignIn)
+TeacherRouter.post("/logout", UserSignOut)
 // private routes for teacher
 TeacherRouter.post("/addEducation", verifyJwt, addEducationalDetails)
 TeacherRouter.patch("/updateEducationDetails", verifyJwt, updateEducationalDetails)

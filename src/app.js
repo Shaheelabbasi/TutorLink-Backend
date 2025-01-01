@@ -3,12 +3,16 @@ const path = require("path");
 const app = express();
 const cors=require("cors")
 const multer=require("multer")
+
+const cookieparser=require("cookie-parser")
 // Set up CORS
 app.use(cors({
     origin:"*",
     methods:['GET','POST','PUT','DELETE']
 }))
 
+
+app.use(cookieparser())
 
 
 

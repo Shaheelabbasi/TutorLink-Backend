@@ -64,14 +64,15 @@ if(!teacherProfile)
 
 const UserSignIn=asyncHandler(async(req,res)=>{
   
-  const { email, password } = req.body;
+  const { email, password ,role} = req.body;
 
-  if (!email || ! password) {
-    throw new ApiError(400, "email and password are required");
+  if (!email || ! password || !role) {
+    throw new ApiError(400, "email ,password and role are required");
   }
 
   const existingUser = await User.findOne({
-    email
+    email,
+    role
   });
   if (!existingUser) {
     throw new ApiError(400, "User not found");
@@ -87,7 +88,12 @@ const UserSignIn=asyncHandler(async(req,res)=>{
   const AccessToken = existingUser.GenerateAccessToken();
   const safeUser = await User.findById(existingUser._id).select("-password -email");
   
-  return res.json(
+  const options={
+    HttpOnly:true,
+    maxAge:36000
+  }
+  res.cookie("accessToken",AccessToken,options)
+  .json(
     new ApiResponse(200, { AccessToken, safeUser }, "logged in successfully")
   );
 
@@ -97,17 +103,13 @@ const UserSignIn=asyncHandler(async(req,res)=>{
 
 const UserSignOut=asyncHandler(async(req,res)=>{
 
-console.log("Here")
+  const options={
+    HttpOnly:true,
+  }
+res.clearCookie("accessToken",options).json(new ApiResponse(200,{},"loggedout successfully"))
 
-req.User=null
 
 
-res.json(
-  new ApiResponse(
-    200,
-    "Logged Out successfully"
-  )
-)
 
 })
 

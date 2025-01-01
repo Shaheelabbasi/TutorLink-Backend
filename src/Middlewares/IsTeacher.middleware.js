@@ -2,7 +2,6 @@ const Apierror = require("../Utils/ApiError.js");
 const {asyncHandler}=require("../Utils/asyncHandler.js");
 const IsTeacher=asyncHandler(async(req,res,next)=>{
 
-  console.log("the role in middleware is ",req.user.role)
     if (req.user.role =="teacher")
     {
      return next();

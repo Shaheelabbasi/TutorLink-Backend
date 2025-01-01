@@ -80,7 +80,32 @@ res.json(
 })
 
 
+const viewEnrolledCourses=asyncHandler(async(req,res)=>{
+// for the students to view the courses that they have enrolled
+
+const enrolledCourses=await CourseEnrollment.find({
+    StudentId:req.user?._id
+}).populate("CourseId")
+
+
+
+if(!enrolledCourses)
+{
+    throw new ApiError(400,"no enrolled courses to show")
+}
+res.json(
+    new ApiResponse(
+        200,
+        enrolledCourses,
+        "successfully fetched enrolled courses"
+    )
+)
+
+})
+
+
 
 module.exports={
-    EnrollCourse
+    EnrollCourse,
+    viewEnrolledCourses
 }
