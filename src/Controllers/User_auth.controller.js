@@ -88,9 +88,10 @@ const UserSignIn=asyncHandler(async(req,res)=>{
   const AccessToken = existingUser.GenerateAccessToken();
   const safeUser = await User.findById(existingUser._id).select("-password -email");
   
+  //maxage milli seconds was an issue
   const options={
     HttpOnly:true,
-    maxAge:36000
+    maxAge:3600000
   }
   res.cookie("accessToken",AccessToken,options)
   .json(

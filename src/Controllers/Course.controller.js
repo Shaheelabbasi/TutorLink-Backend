@@ -193,7 +193,7 @@ const GetAllCourses=asyncHandler(async(req,res)=>{
 
     const allCourses=await Course.find({
         Instructor:req.user?._id
-    })
+    }).select("courseTitle")
 
     if(!allCourses)
     {

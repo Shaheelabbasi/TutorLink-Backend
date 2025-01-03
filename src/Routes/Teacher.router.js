@@ -9,7 +9,7 @@ const verifyJwt = require('../Middlewares/auth.middleware.js')
 const { handleMulterError } = require("../Middlewares/errorhandler.middleware.js")
 const {ViewTeacherProfile}=require("../Controllers/Profile.controller.js")
 const {IsTeacher}=require("../Middlewares/IsTeacher.middleware.js")
-
+const {ViewLiveSessionRequests,UpdateRequestStatus}=require("../Controllers/Livesession.controller.js")
 
 // in case of error in fileupload Signup is skipped and automatically 
 // last error handler is called 
@@ -32,6 +32,11 @@ TeacherRouter.post("/create-course", verifyJwt, fileUpload.fields([{ name: 'thum
 TeacherRouter.post("/addcourse-lectures", verifyJwt, fileUpload.fields([{ name: "lectures", maxCount: 5 }]), addLectures, handleMulterError)
 TeacherRouter.get("/view-profile",verifyJwt, ViewTeacherProfile)
 TeacherRouter.get("/view-course-enrollments",verifyJwt,IsTeacher, ViewCourseEnrollments)
+//later secure it by adding jwt
+TeacherRouter.get("/get-all-courses",verifyJwt,IsTeacher,GetAllCourses)
+TeacherRouter.get("/view-livesession-requests",verifyJwt,IsTeacher,ViewLiveSessionRequests)
+TeacherRouter.post("/update-request-status",verifyJwt,IsTeacher,UpdateRequestStatus)
+
 
 
 
