@@ -1,8 +1,9 @@
 require('dotenv').config({path:'../../.env'})
 const {asyncHandler}=require("../Utils/asyncHandler.js")
 const axios =require('axios')
+const { Console } = require('console')
 const qs=require('querystring')
-const {request}=require('undici')
+// const {request}=require('undici')
 
 
 
@@ -63,4 +64,60 @@ const CreateZoomMeeting=asyncHandler(async(req,res)=>{
 
 })
 
-CreateZoomMeeting();
+
+
+const ScheduleMeeting=async(topic,scheduledTime,scheduledDate)=>{
+
+  
+  
+  
+  try {
+    const access_token= await GenerateAccessToken();
+    const formatted_date=new Date(scheduledDate).toISOString().split("T")[0]
+    const start_time = new Date(`${formatted_date}T${scheduledTime}:00.000+05:00`).toISOString()
+    console.log("the starttime is ",start_time)
+
+    
+  const meetingdata={
+    topic: topic,
+    type: 2, // Scheduled meeting
+    start_time: start_time, // ISO8601 format
+    duration: 60, // In minutes
+    timezone: "Asia/Karachi", // Teacher's timezone
+    settings: {
+      join_before_host: false, // Students cannot join before the teacher
+      mute_upon_entry: true, // Mute all participants upon entry
+      waiting_room: true, // Enable waiting room for security
+    }
+
+  }
+
+  const MeetingResponse=await axios.post('https://api.zoom.us/v2/users/me/meetings',
+  meetingdata,
+  {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${access_token}` // Use your access token here
+    }
+})
+
+// console.log("in zoom file body is ",MeetingResponse.data)``
+
+return MeetingResponse.data
+}
+
+ 
+
+
+catch (error) {
+  console.log("Meeting error is ",error)
+  }
+
+
+}
+
+module.exports=
+
+{
+  ScheduleMeeting
+}

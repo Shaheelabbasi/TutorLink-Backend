@@ -6,7 +6,8 @@ const { Course } = require("../Models/Course.model.js")
 
 const {SendNotificationEmail}=require("../Utils/NotifyEmail.js")
 const { GenerateLiveSessionRequestEmailText,GenerateLiveSessionRequestStatusEmail } = require("../Utils/NotifyEmaildata.js")
-
+const {ScheduleMeeting}=require("../Utils/zoom.js")
+const { LiveSession } = require("../Models/Livesession.model.js")
 
 //for student to request a live session
 const RequestLiveSession=asyncHandler(async(req,res,next)=>{
@@ -121,6 +122,25 @@ const {requestedDate:scheduledDate,requestedTime:scheduledTime,topic}=ValidReque
 
         ValidRequest.status="Approved"
         await ValidRequest.save({new:true})
+       
+      const MeetingResponse=await ScheduleMeeting(topic,scheduledTime,scheduledDate)
+      const{join_url,start_url,password}=MeetingResponse
+
+    //   now create a live session on this meeting link 
+    const createdliveSession=await LiveSession.create({
+        courseId:ValidRequest._id,
+        topic:topic,
+        scheduledDate,
+        scheduledTime,
+        join_url,
+        start_url
+    })
+        if(!createdliveSession)
+        {
+            throw new ApiError(400,"something went wrong while creating the live session")
+        }
+
+        // now sending the email notification
         const emailtext=GenerateLiveSessionRequestStatusEmail(status,studentname,courseTitle,topic,scheduledDate,scheduledTime)
 
         const Isnotified=SendNotificationEmail('yomoma4149@gholar.com',"Live Session Request Update",emailtext)
@@ -130,10 +150,12 @@ const {requestedDate:scheduledDate,requestedTime:scheduledTime,topic}=ValidReque
         {
             throw new ApiError(500,"something went wrong while sending email notification")
         }
+
+
     }
     if(status.toLowerCase() == "rejected")
         {
-    //handle the request rejecetion scenario
+         //handle the request rejecetion scenario
             ValidRequest.status="Rejected"
             await ValidRequest.save({new:true})
            const emailtext=GenerateLiveSessionRequestStatusEmail(status,studentname,courseTitle)
