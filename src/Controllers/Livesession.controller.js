@@ -5,7 +5,7 @@ const ApiResponse = require("../Utils/Apiresponse.js")
 const { Course } = require("../Models/Course.model.js")
 
 const {SendNotificationEmail}=require("../Utils/NotifyEmail.js")
-const { GenerateLiveSessionRequestEmailText,GenerateLiveSessionRequestStatusEmail } = require("../Utils/NotifyEmaildata.js")
+const { GenerateLiveSessionRequestEmailText,GenerateLiveSessionRequestStatusEmail,GenerateTeacherSessionNotificationEmail } = require("../Utils/NotifyEmaildata.js")
 const {ScheduleMeeting}=require("../Utils/zoom.js")
 const { LiveSession } = require("../Models/Livesession.model.js")
 
@@ -107,14 +107,24 @@ const UpdateRequestStatus=asyncHandler(async(req,res)=>{
     {
   throw new ApiError(400,"status and requestId are required")
     }
+    const deepPopulateQuery={
+         path:"courseId",
+        populate:{
+            path:"Instructor",
+            select:"username email"
+        },
+        select:"courseTitle"
+    }
 
-    const ValidRequest=await LiveSessionRequest.findById(requestId).populate("studentId","username email").populate("courseId","courseTitle")
+    const ValidRequest=await LiveSessionRequest.findById(requestId).populate("studentId","username email").populate(deepPopulateQuery)
+
+   // console.log("The valid request is ",ValidRequest)
 const {email:studentemail,username:studentname}=ValidRequest.studentId
 
 //get the cousre details
 
 const {courseTitle}=ValidRequest.courseId
-
+const{email:Instructoremail,username:Instructorname}=ValidRequest.courseId.Instructor
 const {requestedDate:scheduledDate,requestedTime:scheduledTime,topic}=ValidRequest
 
     if(status.toLowerCase() == "approved")
@@ -125,8 +135,7 @@ const {requestedDate:scheduledDate,requestedTime:scheduledTime,topic}=ValidReque
        
       const MeetingResponse=await ScheduleMeeting(topic,scheduledTime,scheduledDate)
       const{join_url,start_url,password}=MeetingResponse
-
-    //   now create a live session on this meeting link 
+     //now create a live session on this meeting link 
     const createdliveSession=await LiveSession.create({
         courseId:ValidRequest._id,
         topic:topic,
@@ -135,20 +144,21 @@ const {requestedDate:scheduledDate,requestedTime:scheduledTime,topic}=ValidReque
         join_url,
         start_url
     })
-        if(!createdliveSession)
-        {
-            throw new ApiError(400,"something went wrong while creating the live session")
-        }
 
-        // now sending the email notification
-        const emailtext=GenerateLiveSessionRequestStatusEmail(status,studentname,courseTitle,topic,scheduledDate,scheduledTime)
-
-        const Isnotified=SendNotificationEmail('yomoma4149@gholar.com',"Live Session Request Update",emailtext)
-        
+    if(!createdliveSession)
+    {
+        throw new ApiError(500,"something went wrong while scheduling the live session")
+    }
+  
+        // now sending the email notification for the student
+        const emailTextForStudent=GenerateLiveSessionRequestStatusEmail(status,studentname,courseTitle,topic,scheduledDate,scheduledTime,join_url)
+        const emailTextForTeacher=GenerateTeacherSessionNotificationEmail(Instructorname,scheduledDate,scheduledTime,start_url)
+        const IsStudentnotified=SendNotificationEmail('yomoma4149@gholar.com',"Live Session Request Update",emailTextForStudent)  //for studnet
+        const IsTeacherNotified=SendNotificationEmail('shaheelabbasi456@gmail.com',"Scheduled Live Session",emailTextForTeacher) // for teacher
         // know schedule the liveseesion and genearte a meeting link for that time 
-        if(!Isnotified)
+        if(!IsStudentnotified || !IsTeacherNotified)
         {
-            throw new ApiError(500,"something went wrong while sending email notification")
+            throw new ApiError(500,"something went wrong while sending email notifications")
         }
 
 
@@ -158,8 +168,8 @@ const {requestedDate:scheduledDate,requestedTime:scheduledTime,topic}=ValidReque
          //handle the request rejecetion scenario
             ValidRequest.status="Rejected"
             await ValidRequest.save({new:true})
-           const emailtext=GenerateLiveSessionRequestStatusEmail(status,studentname,courseTitle)
-           const Isnotified=SendNotificationEmail('yomoma4149@gholar.com',"Live Session Request Update",emailtext)
+           const rejectionemailtext=GenerateLiveSessionRequestStatusEmail(status,studentname,courseTitle)
+           const Isnotified=SendNotificationEmail(studentemail,"Live Session Request Update",rejectionemailtext)
         
         if(!Isnotified)
         {
@@ -180,7 +190,6 @@ const {requestedDate:scheduledDate,requestedTime:scheduledTime,topic}=ValidReque
 
 
 })
-
 
 
 module.exports={

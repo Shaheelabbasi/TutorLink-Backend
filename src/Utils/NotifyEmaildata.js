@@ -23,34 +23,35 @@ return emailtext
 }
 
 
-const GenerateLiveSessionRequestStatusEmail=(status,studentName,courseTitle,topic,scheduledDate,scheduledTime)=>{
+const GenerateLiveSessionRequestStatusEmail=(status,studentName,courseTitle,topic,scheduledDate,scheduledTime,join_url)=>{
  
-  if(status.toLowerCase() == "approved")
-  {
-    const emailtext=`
-  <html>
-<body>
-<p>Dear <strong>${studentName}</strong>,</p>
-
-<p>We are pleased to inform you that your live session request for the course <strong>"${courseTitle}"</strong> has been approved. Below are the session details:</p>
-
-<ul>
-  <li><strong>Requested Topic:</strong> ${topic}</li>
-  <li><strong>Scheduled Date:</strong> ${scheduledDate}</li>
-  <li><strong>Scheduled Time:</strong> ${scheduledTime}</li>
-</ul>
-
-<p>Please ensure that you are available at the scheduled time. You will receive further details, including the session link, shortly.</p>
-
-<p>Thank you for using <strong>TutorLink</strong>. We look forward to an engaging and productive session.</p>
-
-<p>Best regards,</p>
-<p><strong>TutorLink Team</strong></p>
-</body>
-</html>
-    `
-  return emailtext
+  if (status.toLowerCase() == "approved") {
+    const emailtext = `
+    <html>
+  <body>
+  <p>Dear <strong>${studentName}</strong>,</p>
+  
+  <p>We are excited to inform you that your live session request for the course <strong>"${courseTitle}"</strong> has been accepted and successfully scheduled. Below are the session details:</p>
+  
+  <ul>
+    <li><strong>Requested Topic:</strong> ${topic}</li>
+    <li><strong>Scheduled Date:</strong> ${scheduledDate}</li>
+    <li><strong>Scheduled Time:</strong> ${scheduledTime}</li>
+    <li><strong>Join Link:</strong> <a href="${join_url}" target="_blank">${join_url}</a></li>
+  </ul>
+  
+  <p>Please ensure that you are available at the scheduled time. Click the above link to join the session at the scheduled time.</p>
+  
+  <p>We look forward to your participation in this interactive and enriching session. Thank you for choosing <strong>TutorLink</strong>.</p>
+  
+  <p>Best regards,</p>
+  <p><strong>TutorLink Team</strong></p>
+  </body>
+  </html>
+    `;
+    return emailtext;
   }
+  
 
   if(status.toLowerCase()=="rejected")
   {
@@ -73,8 +74,33 @@ const GenerateLiveSessionRequestStatusEmail=(status,studentName,courseTitle,topi
 
 }
 
+const GenerateTeacherSessionNotificationEmail = (Teachername,scheduledDate, scheduledTime, start_url) => {
+  const emailtext = `
+  <html>
+  <body>
+  <p>Dear ${Teachername},</p>
+  
+  <p>Your live session has been successfully scheduled. You can start the session by clicking the link below:</p>
+  
+  <ul>
+    <li><strong>Scheduled Date:</strong> ${scheduledDate}</li>
+    <li><strong>Scheduled Time:</strong> ${scheduledTime}</li>
+    <li><strong>Start Link:</strong> <a href="${start_url}" target="_blank">${start_url}</a></li>
+  </ul>
+
+  <p>Best regards,<br/> TutorLink Team</p>
+  </body>
+  </html>
+`;
+
+  return emailtext;
+};
+
+
+
 
 module.exports={
   GenerateLiveSessionRequestEmailText,
-  GenerateLiveSessionRequestStatusEmail
+  GenerateLiveSessionRequestStatusEmail,
+  GenerateTeacherSessionNotificationEmail
 }

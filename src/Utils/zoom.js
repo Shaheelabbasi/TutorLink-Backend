@@ -8,9 +8,17 @@ const qs=require('querystring')
 
 
 const GenerateAccessToken=async()=>{
+  let tokenexpiry=null
+  let token=null
 
   try {
     
+// compare the currenttime milli seconds 
+    if(token && tokenexpiry > new Date().getTime())
+    {
+      //using the same token 
+      return token
+    }
     const response=await axios.post(
       'https://zoom.us/oauth/token',
       qs.stringify({ grant_type: 'account_credentials', account_id: process.env.ZOOM_ACCOUNT_ID }),
@@ -20,6 +28,12 @@ const GenerateAccessToken=async()=>{
         }
       }
     );
+
+    token=response.data.access_token;
+    // now we neeed to calculate the expiration time of the token
+    // to do this we add the current time to the time of its expiration
+    // token expiry time in milli seconds 
+    tokenexpiry=new Date().getTime()+response.data.expires_in*1000
     return response.data.access_token
   } 
 catch (error) {
