@@ -9,6 +9,7 @@ const { GenerateLiveSessionRequestEmailText,GenerateLiveSessionRequestStatusEmai
 const {ScheduleMeeting}=require("../Utils/zoom.js")
 const { LiveSession } = require("../Models/Livesession.model.js")
 
+
 //for student to request a live session
 const RequestLiveSession=asyncHandler(async(req,res,next)=>{
 //enrolled course id would be stored on frontend and included in each request
@@ -137,7 +138,7 @@ const {requestedDate:scheduledDate,requestedTime:scheduledTime,topic}=ValidReque
       const{join_url,start_url,password}=MeetingResponse
      //now create a live session on this meeting link 
     const createdliveSession=await LiveSession.create({
-        courseId:ValidRequest._id,
+        courseId:ValidRequest.courseId._id,
         topic:topic,
         scheduledDate,
         scheduledTime,
@@ -153,8 +154,8 @@ const {requestedDate:scheduledDate,requestedTime:scheduledTime,topic}=ValidReque
         // now sending the email notification for the student
         const emailTextForStudent=GenerateLiveSessionRequestStatusEmail(status,studentname,courseTitle,topic,scheduledDate,scheduledTime,join_url)
         const emailTextForTeacher=GenerateTeacherSessionNotificationEmail(Instructorname,scheduledDate,scheduledTime,start_url)
-        const IsStudentnotified=SendNotificationEmail('yomoma4149@gholar.com',"Live Session Request Update",emailTextForStudent)  //for studnet
-        const IsTeacherNotified=SendNotificationEmail('shaheelabbasi456@gmail.com',"Scheduled Live Session",emailTextForTeacher) // for teacher
+        const IsStudentnotified=SendNotificationEmail(studentemail,"Live Session Request Update",emailTextForStudent)  //for studnet
+        const IsTeacherNotified=SendNotificationEmail(Instructoremail,"Scheduled Live Session",emailTextForTeacher) // for teacher
         // know schedule the liveseesion and genearte a meeting link for that time 
         if(!IsStudentnotified || !IsTeacherNotified)
         {
@@ -192,9 +193,87 @@ const {requestedDate:scheduledDate,requestedTime:scheduledTime,topic}=ValidReque
 })
 
 
+const ViewScheduledLiveSessions=asyncHandler(async(req,res)=>{
+
+    const {courseId}=req.body
+const scheduledSessions=await LiveSession.find({
+    courseId:courseId
+}).populate("courseId","courseTitle")
+
+if(!scheduledSessions)
+{
+    throw new ApiError(400,"No live sessions scheduled")
+}
+
+
+res.json(
+    new ApiResponse(
+        200,
+        scheduledSessions,
+        "successfully fetched live sessions"
+    )
+)
+})
+
+
+const scheduleLiveSession=asyncHandler(async(req,res)=>{
+
+    const {
+        courseId,
+        topic,
+        scheduledDate,
+        scheduledTime
+    }=req.body
+if(!courseId || !topic || !scheduledDate || !scheduledTime)
+{
+    throw new ApiError(400,"Topic date and time are required")
+}
+
+// check for existing live session
+const existingSession=await LiveSession.findOne({
+    courseId,
+    scheduledDate,
+    scheduledTime
+})
+
+if(existingSession)
+{
+    throw new ApiError(400,"Live session already scheduled on this time")
+}
+
+
+//call the zoom api
+const MeetingResponse=await ScheduleMeeting(topic,scheduledTime,scheduledDate)
+const {join_url,start_url}=MeetingResponse
+
+const scheduledSession=await LiveSession.create({
+    courseId:courseId,
+    topic,
+    scheduledDate,
+    scheduledTime,
+    join_url,
+    start_url
+
+})
+if(!scheduledSession)
+{
+    throw new ApiError(500,"something wnet wrong while scheduling the session")
+}
+
+res.json(
+    new ApiResponse(
+        201,
+        scheduledSession,
+      "scheduled session successfully"
+))
+})
+
 module.exports={
     RequestLiveSession,
     ViewLiveSessionRequests,
-    UpdateRequestStatus
+    UpdateRequestStatus,
+    ViewScheduledLiveSessions,
+    scheduleLiveSession
+
 
 }

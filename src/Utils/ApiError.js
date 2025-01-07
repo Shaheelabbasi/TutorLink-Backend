@@ -28,6 +28,7 @@ class Apierror extends Error
 
 }
 
+ //console.log("api error object ",new Apierror())
 // stack representation
 // the stack is  Error: Studentname or email already exists
 //     at D:\TutorLink\src\Controllers\Student_auth.controller.js:23:11

@@ -6,16 +6,18 @@ const qs=require('querystring')
 // const {request}=require('undici')
 
 
+//  for usig the same token if it is already generated
+let tokenexpiry=null
+let token=null
 
 const GenerateAccessToken=async()=>{
-  let tokenexpiry=null
-  let token=null
-
+ 
   try {
     
 // compare the currenttime milli seconds 
     if(token && tokenexpiry > new Date().getTime())
     {
+      console.log("using same token")
       //using the same token 
       return token
     }
@@ -47,7 +49,8 @@ catch (error) {
 
 const CreateZoomMeeting=asyncHandler(async(req,res)=>{
 
-  const access_token= await GenerateAccessToken();
+ const access_token= await GenerateAccessToken();
+
 
   // console.log("token in create function is ",access_token)
    const meetingdata={
@@ -89,8 +92,6 @@ const ScheduleMeeting=async(topic,scheduledTime,scheduledDate)=>{
     const access_token= await GenerateAccessToken();
     const formatted_date=new Date(scheduledDate).toISOString().split("T")[0]
     const start_time = new Date(`${formatted_date}T${scheduledTime}:00.000+05:00`).toISOString()
-    console.log("the starttime is ",start_time)
-
     
   const meetingdata={
     topic: topic,
