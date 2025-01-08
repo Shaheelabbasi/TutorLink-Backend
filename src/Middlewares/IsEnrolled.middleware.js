@@ -9,6 +9,7 @@ const { User } = require("../Models/User.model.js")
 
 const IsStudentEnrolled=asyncHandler(async(req,res,next)=>{
 
+    
     const {courseId}=req.body;
 
     const enrollmentStatus=await CourseEnrollment.findOne({

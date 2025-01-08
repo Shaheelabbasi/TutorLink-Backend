@@ -11,13 +11,12 @@ const EnrollCourse=asyncHandler(async (req,res) => {
 
   //check for the username
 const validInstructor=await User.findOne({
-    username:teachername
+    fullname:teachername
 })
 
 if(!validInstructor)
 {
-    throw new ApiError("Instructor does not exist")
-
+    throw new ApiError(400,"Instructor does not exist")
 }
 
   //check that the selected title against the selected instructor
@@ -49,6 +48,7 @@ if(IsCourseValid.enrollmentEnd < Date.now())
 const newEnrollment=await CourseEnrollment.create({
     StudentId:req.user?._id,
     CourseId:IsCourseValid._id,
+    //considering the payment status as completed for dummy enrollment
     PaymentStatus:"completed"
 })
 
@@ -63,7 +63,7 @@ if(!newEnrollment)
 //like requesting a live session acessing lectures posting questions and viewing answers
 const populatedEnrollment=await CourseEnrollment.findById(newEnrollment._id).populate({
     path:"StudentId",
-    select:"username role"
+    select:"username"
 })
 
 
@@ -105,7 +105,55 @@ res.json(
 
 
 
+//get the enrollments for a particular course
+// because we need to send scheduling notifications to each enrolled student in a particular course
+//we particulary need the email ids of all the students
+//it is a utility function for fetching email ids it is not a genuine endpoint
+
+
+const getEnrolledStudents=async(courseId)=>{
+
+    // console.log("course id is ",courseId)/
+
+    //const {courseId}=req.body
+
+    if(!courseId)
+    {
+        throw new ApiError(400,"course id is required")
+    }
+
+    const IsValidCourse=await Course.findById(courseId)
+    if(!IsValidCourse)
+    {
+        throw new ApiError(400,"Invalid courseId")
+    }
+
+    const EnrolledList=await CourseEnrollment.find({
+       CourseId:IsValidCourse._id
+    }).populate("StudentId","email fullname")
+
+    if(EnrolledList.length ==0)
+        {
+            throw new ApiError(400,"no studnets enrolled for this particular course")
+        }
+
+//email ids and fullnames enrolled students
+    let enrolledStudents=[]
+    EnrolledList.map((enrolled)=>{
+        enrolledStudents.push({email:enrolled.StudentId.email,fullname:enrolled.StudentId.fullname})
+    })
+
+    
+    return enrolledStudents
+}
+
+
+
+
+// console.log("enolled students are ",ans)
+
 module.exports={
     EnrollCourse,
-    viewEnrolledCourses
+    viewEnrolledCourses,
+    getEnrolledStudents
 }

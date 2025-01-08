@@ -5,32 +5,63 @@ const ApiResponse=require("../Utils/Apiresponse.js")
 const { uploadOnCloudnary } = require("../Utils/cloudinary.js")
 const {TeacherProfile}=require("../Models/Teacherprofile.model.js")
 
+
+const GenerateUniqueUsername=(fullname)=>{
+
+  let username=fullname.split(" ").join("").toLowerCase()
+let randomNumber=Math.floor(Math.random()*1000)+1
+
+username=username+"_"+randomNumber
+
+return username
+
+
+}
+
 const UserSignUp=asyncHandler(async(req,res)=>{
 
-    const {username, email, password,Profilepicture,role} = req.body;
+    const {fullname, email, password,Profilepicture,role} = req.body;
 
-    if (!username || !email || !password || !role)
+    if (!fullname || !email || !password || !role)
     {
       throw new ApiError(400,"please provide all the fields")
     }
-  if ([username, email, password,role].some((field) => field.trim() === "")) {
+  if ([fullname, email, password,role].some((field) => field.trim() === "")) {
     throw new ApiError(400,"All fields are required");
   }
 
   const existingUser = await User.findOne({
-    $or: [{ username }, { email }]
+    $or: [{ fullname }, { email }]
   });
   if (existingUser) {
-    throw new ApiError(400, "Username or email already exists");
+    throw new ApiError(400, "fullname or email already exists");
   }
   let profile=null
 if (Profilepicture && req.file)
 {
     profile=await uploadOnCloudnary(req.file.path)
 }
+   
+
+// here we wil have to generate  a unique username for each user
+let uniqueUsername=null
+let Isunique=false
+
+while(!Isunique)
+  {
+   uniqueUsername=GenerateUniqueUsername(fullname)
+ const existingUsername=await User.findOne({username:uniqueUsername})
+
+ //break the loop if nothing is found
+ if(!existingUsername) {
+   Isunique=true
+ }
+}
+
 //   upload the picture to the cloud an then add the link to the database
   const newUser = await User.create({
-    username,
+    username:uniqueUsername,
+    fullname,
     email,
     password,
     Profilepicture:profile?.url,

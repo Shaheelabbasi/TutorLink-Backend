@@ -17,7 +17,7 @@ StudentRouter.post("/logout",verifyJwt,UserSignOut)
 StudentRouter.get("/search-course",searchCourse)
 
 
-StudentRouter.post("/enroll-course",verifyJwt,EnrollCourse)
+StudentRouter.post("/enroll-course",verifyJwt,IsStudent,EnrollCourse)
 StudentRouter.get("/get-course-lectures",verifyJwt,IsStudentEnrolled,GetCourseLectures)
 StudentRouter.get("/view-enrolled-courses",verifyJwt,IsStudent,viewEnrolledCourses)
 

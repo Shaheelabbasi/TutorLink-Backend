@@ -74,18 +74,42 @@ const GenerateLiveSessionRequestStatusEmail=(status,studentName,courseTitle,topi
 
 }
 
-const GenerateTeacherSessionNotificationEmail = (Teachername,scheduledDate, scheduledTime, start_url) => {
+const GenerateTeacherSessionNotificationEmail = (Teachername,courseTitle,topic,scheduledDate, scheduledTime, start_url) => {
   const emailtext = `
   <html>
   <body>
-  <p>Dear ${Teachername},</p>
+  <p>Dear <strong> ${Teachername} </strong>,</p>
   
-  <p>Your live session has been successfully scheduled. You can start the session by clicking the link below:</p>
+  <p>Your live session has been successfully scheduled for the Course <strong> ${courseTitle} </strong>. You can start the session by clicking the link below:</p>
   
   <ul>
+   <li><strong>topic:</strong> ${topic}</li>
     <li><strong>Scheduled Date:</strong> ${scheduledDate}</li>
     <li><strong>Scheduled Time:</strong> ${scheduledTime}</li>
     <li><strong>Start Link:</strong> <a href="${start_url}" target="_blank">${start_url}</a></li>
+  </ul>
+
+  <p>Best regards,<br/> <strong> TutorLink Team </strong></p>
+  </body>
+  </html>
+`;
+
+  return emailtext;
+};
+
+const GenerateStudentNotificationEmail=(studentName,courseTitle,topic,scheduledDate,scheduledTime,join_url)=>{
+  const emailtext = `
+  <html>
+  <body>
+  <p>Dear <strong>${studentName}</strong>,</p>
+  
+  <p>Your live session has been scheduled for the course  <strong> ${courseTitle} </strong>.Below are the session details</p>
+  
+  <ul>
+    <li><strong>topic:</strong> ${topic}</li>
+    <li><strong>Scheduled Date:</strong> ${scheduledDate}</li>
+    <li><strong>Scheduled Time:</strong> ${scheduledTime}</li>
+    <li><strong>Start Link:</strong> <a href="${join_url}" target="_blank">${join_url}</a></li>
   </ul>
 
   <p>Best regards,<br/> TutorLink Team</p>
@@ -94,13 +118,15 @@ const GenerateTeacherSessionNotificationEmail = (Teachername,scheduledDate, sche
 `;
 
   return emailtext;
-};
 
+}
 
 
 
 module.exports={
   GenerateLiveSessionRequestEmailText,
   GenerateLiveSessionRequestStatusEmail,
-  GenerateTeacherSessionNotificationEmail
+  GenerateTeacherSessionNotificationEmail,
+  GenerateStudentNotificationEmail
+
 }
