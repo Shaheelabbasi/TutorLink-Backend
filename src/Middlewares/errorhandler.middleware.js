@@ -13,7 +13,7 @@ const handleMulterError=(err, req, res, next) => {
       {
         res.status(400).json({
           success:false,
-          message:"cannot add more than 5 files"
+          message:"please add only mentioned number of files"
         })
       }
     }

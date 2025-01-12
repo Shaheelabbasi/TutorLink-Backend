@@ -10,7 +10,7 @@ const { handleMulterError } = require("../Middlewares/errorhandler.middleware.js
 const {ViewTeacherProfile}=require("../Controllers/Profile.controller.js")
 const {IsTeacher}=require("../Middlewares/IsTeacher.middleware.js")
 const {ViewLiveSessionRequests,UpdateRequestStatus,ViewScheduledLiveSessions,scheduleLiveSession}=require("../Controllers/Livesession.controller.js")
-
+const {postAnswer}=require("../Controllers/community.controller.js")
 // in case of error in fileupload Signup is skipped and automatically 
 // last error handler is called 
 TeacherRouter.post("/signup", fileUpload.single("profilepicture"), UserSignUp, (error, req, res) => {
@@ -38,7 +38,7 @@ TeacherRouter.get("/view-livesession-requests",verifyJwt,IsTeacher,ViewLiveSessi
 TeacherRouter.post("/update-request-status",verifyJwt,IsTeacher,UpdateRequestStatus)
 TeacherRouter.post("/view-scheduled-sessions",verifyJwt,IsTeacher,ViewScheduledLiveSessions)
 TeacherRouter.post("/schedule-live-session",verifyJwt,IsTeacher,scheduleLiveSession)
-
+TeacherRouter.post("/post-answer",verifyJwt,IsTeacher,fileUpload.fields([{name:"answer_media",maxCount:3}]),postAnswer,handleMulterError)
 
 
 

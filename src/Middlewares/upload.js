@@ -48,6 +48,32 @@ function setDestination(req, file, cb){
        cb(null,uploadDir)
      }
     }
+    if(file.fieldname =="question_media")
+    {
+      uploadDir=path.join(__dirname,"../../Public/Questions")
+     if (fs.existsSync(uploadDir))
+     {
+       cb(null,uploadDir)
+     }
+     else
+     {
+       fs.mkdirSync(uploadDir)
+       cb(null,uploadDir)
+     }
+    }
+    if(file.fieldname =="answers_media")
+      {
+        uploadDir=path.join(__dirname,"../../Public/Answers")
+       if (fs.existsSync(uploadDir))
+       {
+         cb(null,uploadDir)
+       }
+       else
+       {
+         fs.mkdirSync(uploadDir)
+         cb(null,uploadDir)
+       }
+      }
 
 }
 const storage = multer.diskStorage({
@@ -83,6 +109,21 @@ const storage = multer.diskStorage({
         // reject the file and throw error
        return cb(new Error(`Only Images Png ,jpg and Jpeg are allowed for ${file.fieldname}`),false)
     }
+
+
+    else if(file.fieldname =="question_media")
+    {
+      if(!allowedImageTypes.includes(file.mimetype))
+        // reject the file and throw error
+       return cb(new Error(`Only Images Png ,jpg and Jpeg are allowed for ${file.fieldname}`),false)
+    }
+    else if(file.fieldname =="answer_media")
+      {
+        if(!allowedImageTypes.includes(file.mimetype))
+          // reject the file and throw error
+         return cb(new Error(`Only Images Png ,jpg and Jpeg are allowed for ${file.fieldname}`),false)
+      }
+
     // accept the file
     cb(null,true)
   }

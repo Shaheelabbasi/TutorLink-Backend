@@ -10,6 +10,11 @@ const {EnrollCourse,viewEnrolledCourses}=require("../Controllers/Enrollment.cont
 const {IsStudentEnrolled}=require("../Middlewares/IsEnrolled.middleware.js")
 const {RequestLiveSession}=require("../Controllers/Livesession.controller.js")
 const {IsStudent}=require("../Middlewares/IsStudent.middleware.js")
+
+const {askQuestion}=require("../Controllers/community.controller.js")
+const { handleMulterError } = require("../Middlewares/errorhandler.middleware.js")
+
+
 StudentRouter.post("/signup",fileUpload.single("profilepicture"),UserSignUp)
 StudentRouter.post("/login",UserSignIn)
 StudentRouter.post("/logout",verifyJwt,UserSignOut)
@@ -22,6 +27,9 @@ StudentRouter.get("/get-course-lectures",verifyJwt,IsStudentEnrolled,GetCourseLe
 StudentRouter.get("/view-enrolled-courses",verifyJwt,IsStudent,viewEnrolledCourses)
 
 StudentRouter.post("/request-live-session",verifyJwt,IsStudent,IsStudentEnrolled,RequestLiveSession)
+//a route to view the scheduled live sessions
+
+StudentRouter.post("/ask-question",verifyJwt,IsStudent,fileUpload.fields([{name:"question_media",maxCount:3}]),IsStudentEnrolled,askQuestion,handleMulterError)
 
 
 
