@@ -121,12 +121,51 @@ const GenerateStudentNotificationEmail=(studentName,courseTitle,topic,scheduledD
 
 }
 
+const GenerateCommunityNotificationEmail=(studentName,Teachername,courseTitle,Isanswered)=>{
+let emailtext=null
+  if(Isanswered)
+  {
+
+   emailtext = `
+  <html>
+  <body>
+  <p>Dear <strong>${studentName}</strong>,</p>
+  
+  <p>Your submitted question against the course  <strong> ${courseTitle} </strong> has been answered.please login to view it. </p>
+
+
+  <p>Best regards,<br/> TutorLink Team</p>
+  </body>
+  </html>
+`;
+  }
+
+  else
+  {
+    emailtext = `
+    <html>
+    <body>
+    <p>Dear <strong>${Teachername}</strong>,</p>
+    
+    <p>A new question has been posted against the course  <strong> ${courseTitle} </strong>.You can login to view it </p>
+  
+  
+    <p>Best regards,<br/> TutorLink Team</p>
+    </body>
+    </html>
+  `;
+  }
+  return emailtext;
+
+}
 
 
 module.exports={
   GenerateLiveSessionRequestEmailText,
   GenerateLiveSessionRequestStatusEmail,
   GenerateTeacherSessionNotificationEmail,
-  GenerateStudentNotificationEmail
+  GenerateCommunityNotificationEmail
+
+
 
 }
