@@ -2,7 +2,7 @@ const { asyncHandler } = require("../Utils/asyncHandler.js")
 const ApiError = require("../Utils/ApiError.js")
 const ApiResponse = require("../Utils/Apiresponse.js")
 const {CommunityQuestions}=require("../Models/question.model.js")
-const { uploadOnCloudnary } = require("../Utils/cloudinary.js")
+const { uploadOnCloudnary ,deleteFromCloudinary} = require("../Utils/cloudinary.js")
 const { CommunityAnswers } = require("../Models/answer.model.js")
 const{Course}=require("../Models/Course.model.js")
 const{GenerateCommunityNotificationEmail}=require("../Utils/NotifyEmaildata.js")
@@ -250,11 +250,68 @@ res.json(
 )
 
 })
+
+
+const editPostedQuestion=asyncHandler(async(req,res)=>{
+const {questionId,courseId,content}=req.body
+
+
+const existingQuestion=await CommunityQuestions.findById(questionId)
+
+
+// a student can edit the question whose answer has not been provided by the teacher
+if(existingQuestion.answer==null)
+{
+    throw new ApiError(400,"cannot edit the question")
+}
+
+
+existingQuestion.content=content
+await existingQuestion.save()
+
+res.json(
+    new ApiResponse(200,existingQuestion,"question updated successfully")
+)
+
+})
+
+const deletePostedQuestion=asyncHandler(async(req,res)=>{
+
+    const {questionId,courseId}=req.body
+
+
+    const existingQuestion=await CommunityQuestions.findById(questionId)
+
+
+     // delete the coludinary images of the posted question when the question is deleted
+
+     existingQuestion.media?.map(async(question)=>{
+
+        await deleteFromCloudinary(question?.url)
+     })
+
+     const Isdeleted=await CommunityQuestions.findByIdAndDelete(existingQuestion._id)
+
+    res.json(
+        new ApiResponse(
+            200,
+            Isdeleted,
+            "question deleted successfully"
+        )
+    )
+
+})
+
+
+
 module.exports={
     askQuestion,
     postAnswer,
     viewCommunity,
     ViewQuestions,
-    viewAskedQuestions
+    viewAskedQuestions,
+    editPostedQuestion,
+    deletePostedQuestion
+
 
 }

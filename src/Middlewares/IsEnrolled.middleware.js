@@ -11,7 +11,7 @@ const IsStudentEnrolled=asyncHandler(async(req,res,next)=>{
 
     
     const {courseId}=req.body;
-console.log("cousre id is ",courseId)
+    console.log("cousreid is ",courseId)
     const enrollmentStatus=await CourseEnrollment.findOne({
         StudentId:req.user?._id,
         CourseId:courseId,

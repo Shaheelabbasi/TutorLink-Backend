@@ -40,7 +40,7 @@ try {
 
 
 
-const deleteFromCloudinary=(oldurl)=>{
+const deleteFromCloudinary=async(oldurl)=>{
 
   try {
     //removing file extension.
@@ -48,9 +48,9 @@ const deleteFromCloudinary=(oldurl)=>{
     oldurl=oldurl.substring(0,lastDotIndex)
 
     const id=oldurl.split("/").pop();
-     const response=   cloudinary.uploader.destroy(id).then((status)=>{
+     const response=   await cloudinary.uploader.destroy(id).then((status)=>{
         console.log(status)
-     });
+     }).catch((err)=>console.log(err));
     
     return response;
   } catch (error) {

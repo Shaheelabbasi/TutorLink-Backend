@@ -11,7 +11,7 @@ const {IsStudentEnrolled}=require("../Middlewares/IsEnrolled.middleware.js")
 const {RequestLiveSession,ViewScheduledLiveSessions}=require("../Controllers/Livesession.controller.js")
 const {IsStudent}=require("../Middlewares/IsStudent.middleware.js")
 
-const {askQuestion,viewCommunity,viewAskedQuestions}=require("../Controllers/community.controller.js")
+const {askQuestion,viewCommunity,viewAskedQuestions,editPostedQuestion,deletePostedQuestion}=require("../Controllers/community.controller.js")
 const { handleMulterError } = require("../Middlewares/errorhandler.middleware.js")
 
 
@@ -34,10 +34,9 @@ StudentRouter.post("/ask-question",verifyJwt,IsStudent,fileUpload.fields([{name:
 StudentRouter.post("/view-community",verifyJwt,IsStudent,IsStudentEnrolled,viewCommunity)
 //view all the asked questions with their asnwers if provided
 StudentRouter.post("/view-asked-questions",verifyJwt,IsStudent,IsStudentEnrolled,viewAskedQuestions)
-
-
-
-
+//route for the student to edit the posted question
+StudentRouter.patch("/edit-question",verifyJwt,IsStudent,IsStudentEnrolled,editPostedQuestion)
+StudentRouter.delete("/delete-question",verifyJwt,IsStudent,IsStudentEnrolled,deletePostedQuestion)
 module.exports={
     StudentRouter
 }

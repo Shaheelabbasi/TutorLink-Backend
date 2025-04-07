@@ -30,7 +30,7 @@ TeacherRouter.patch("/updateEducationDetails", verifyJwt, updateEducationalDetai
 TeacherRouter.get("/getEducationDetails", verifyJwt, GetEducationalDetails)
 TeacherRouter.post("/create-course", verifyJwt, fileUpload.fields([{ name: 'thumbnail', maxCount: 1 }, { name: "lectures", maxCount: 5 }]), createCourse, handleMulterError)
 TeacherRouter.post("/addcourse-lectures", verifyJwt, fileUpload.fields([{ name: "lectures", maxCount: 5 }]), addLectures, handleMulterError)
-TeacherRouter.get("/view-profile",verifyJwt, ViewTeacherProfile)
+TeacherRouter.get("/view-profile", ViewTeacherProfile)
 TeacherRouter.get("/view-course-enrollments",verifyJwt,IsTeacher, ViewCourseEnrollments)
 //later secure it by adding jwt
 TeacherRouter.get("/get-all-courses",verifyJwt,IsTeacher,GetAllCourses)

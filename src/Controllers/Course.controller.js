@@ -209,8 +209,6 @@ const GetAllCourses=asyncHandler(async(req,res)=>{
 })
 
 
-
-
 const searchCourse=asyncHandler(async(req,res)=>{
     const{
         title,
@@ -224,7 +222,10 @@ const searchCourse=asyncHandler(async(req,res)=>{
 const searchquery={};
 if(title)
 {
+    // both ways are same 
     searchquery.courseTitle={$regex:new RegExp(title,'i')}
+
+   // searchquery.courseTitle={$regex:title,$options:"i"}
 }
 if(level)
 {
@@ -233,7 +234,7 @@ if(level)
 
 // excluded lectures before enrollment
 // lectures will be made available after enrollment
-    const searchResult=await Course.find(searchquery,"-lectures -createdAt -updatedAt").populate({
+    const searchResult=await Course.find(searchquery,"-lectures -createdAt -updatedAt -price").populate({
          path:"Instructor",
         select:"username Profilepicture"
     })
