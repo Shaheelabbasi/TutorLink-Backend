@@ -14,6 +14,7 @@ const {IsStudent}=require("../Middlewares/IsStudent.middleware.js")
 const {askQuestion,viewCommunity,viewAskedQuestions,editPostedQuestion,deletePostedQuestion}=require("../Controllers/community.controller.js")
 const { handleMulterError } = require("../Middlewares/errorhandler.middleware.js")
 
+const {ProvideFeedback}=require('../Controllers/feedback.controller.js')
 
 StudentRouter.post("/signup",fileUpload.single("profilepicture"),UserSignUp)
 StudentRouter.post("/login",UserSignIn)
@@ -37,6 +38,10 @@ StudentRouter.post("/view-asked-questions",verifyJwt,IsStudent,IsStudentEnrolled
 //route for the student to edit the posted question
 StudentRouter.patch("/edit-question",verifyJwt,IsStudent,IsStudentEnrolled,editPostedQuestion)
 StudentRouter.delete("/delete-question",verifyJwt,IsStudent,IsStudentEnrolled,deletePostedQuestion)
+
+//routes for student to provide the feedback
+
+StudentRouter.post("/provide-feedback",verifyJwt,IsStudent,IsStudentEnrolled,ProvideFeedback)
 module.exports={
     StudentRouter
 }

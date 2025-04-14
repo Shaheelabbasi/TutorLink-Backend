@@ -19,6 +19,12 @@ const TeacherProfileSchema = new mongoose.Schema({
             ref: "Course", // Reference to the Course model
         },
     ],
+   feedback:[
+    {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "feedback", // Reference to the Course model
+    },
+   ]
 }, { timestamps: true }); 
 
 const TeacherProfile = mongoose.model("Teacher_Profile", TeacherProfileSchema);

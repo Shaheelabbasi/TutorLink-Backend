@@ -13,7 +13,14 @@ const createCourse=asyncHandler(async(req,res)=>{
     if(!req.files['lectures'])
     {
         throw new ApiError(400,"You must add the lecture files")
+        
     }
+  
+    if(!req.files['thumbnail'])
+        {
+            throw new ApiError(400,"You must add the course thumbnail")
+        }
+
 
     const {
         courseTitle,
