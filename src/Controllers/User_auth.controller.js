@@ -20,7 +20,9 @@ return username
 
 const UserSignUp=asyncHandler(async(req,res)=>{
 
-    const {fullname, email, password,Profilepicture,role} = req.body;
+    const {fullname, email, password,role} = req.body;
+
+
 
     if (!fullname || !email || !password || !role)
     {
@@ -37,7 +39,7 @@ const UserSignUp=asyncHandler(async(req,res)=>{
     throw new ApiError(400, "fullname or email already exists");
   }
   let profile=null
-if (Profilepicture && req.file)
+if (req.file)
 {
     profile=await uploadOnCloudnary(req.file.path)
 }
@@ -139,8 +141,6 @@ const UserSignOut=asyncHandler(async(req,res)=>{
     HttpOnly:true,
   }
 res.clearCookie("accessToken",options).json(new ApiResponse(200,{},"loggedout successfully"))
-
-
 
 
 })
