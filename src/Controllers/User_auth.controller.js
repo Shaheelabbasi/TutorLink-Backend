@@ -43,8 +43,7 @@ if (req.file)
 {
     profile=await uploadOnCloudnary(req.file.path)
 }
-   
-
+console.log("profile here is ",profile)
 // here we wil have to generate  a unique username for each user
 let uniqueUsername=null
 let Isunique=false

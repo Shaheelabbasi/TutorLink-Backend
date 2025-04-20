@@ -16,7 +16,7 @@ const { handleMulterError } = require("../Middlewares/errorhandler.middleware.js
 
 const {ProvideFeedback}=require('../Controllers/feedback.controller.js')
 
-StudentRouter.post("/signup",fileUpload.single("profilepicture"),UserSignUp)
+StudentRouter.post("/signup",fileUpload.single("profile"),UserSignUp)
 StudentRouter.post("/login",UserSignIn)
 StudentRouter.post("/logout",verifyJwt,UserSignOut)
 
@@ -41,7 +41,8 @@ StudentRouter.delete("/delete-question",verifyJwt,IsStudent,IsStudentEnrolled,de
 
 //routes for student to provide the feedback
 
-StudentRouter.post("/provide-feedback",verifyJwt,IsStudent,IsStudentEnrolled,ProvideFeedback)
+StudentRouter.post("/provide-feedback",
+    verifyJwt,IsStudent,IsStudentEnrolled,ProvideFeedback)
 module.exports={
     StudentRouter
 }

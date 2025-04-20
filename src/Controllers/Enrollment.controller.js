@@ -4,6 +4,7 @@ const ApiResponse = require("../Utils/Apiresponse.js")
 const {CourseEnrollment}=require("../Models/Enrollment.model.js")
 const { Course } = require("../Models/Course.model.js")
 const { User } = require("../Models/User.model.js")
+const { populate } = require("dotenv")
 
 const EnrollCourse=asyncHandler(async (req,res) => {
     
@@ -83,9 +84,18 @@ res.json(
 const viewEnrolledCourses=asyncHandler(async(req,res)=>{
 // for the students to view the courses that they have enrolled
 
+
+const populateQuery={
+    path:"CourseId",
+    select:"courseTitle courselevel Instructor",
+    populate:{
+        path:"Instructor",
+        select:"fullname"
+    }
+}
 const enrolledCourses=await CourseEnrollment.find({
     StudentId:req.user?._id
-}).populate("CourseId")
+}).populate(populateQuery)
 
 
 

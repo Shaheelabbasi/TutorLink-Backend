@@ -103,7 +103,7 @@ const storage = multer.diskStorage({
      }
    
 
-    else if(file.fieldname =="thumbnail" || file.fieldname =="profilepicture")
+    else if(file.fieldname =="thumbnail" || file.fieldname =="profile")
     {
       if(!allowedImageTypes.includes(file.mimetype))
         // reject the file and throw error

@@ -5,14 +5,17 @@ const cors=require("cors")
 const multer=require("multer")
 
 const cookieparser=require("cookie-parser")
+
+app.use(cookieparser())
 // Set up CORS
 app.use(cors({
-    origin:"*",
-    methods:['GET','POST','PUT','DELETE']
+    origin:["http://localhost:3000","http://localhost:3001","http://localhost:5173"],
+    methods:['GET','POST','PUT','DELETE'],
+    credentials:true
 }))
 
 
-app.use(cookieparser())
+
 
 
 

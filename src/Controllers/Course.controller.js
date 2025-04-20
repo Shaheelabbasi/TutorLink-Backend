@@ -195,6 +195,7 @@ return res.json(
 )
 })
 
+
 const GetAllCourses=asyncHandler(async(req,res)=>{
 
 
@@ -219,7 +220,8 @@ const GetAllCourses=asyncHandler(async(req,res)=>{
 const searchCourse=asyncHandler(async(req,res)=>{
     const{
         title,
-        level
+        level,
+        duration
     }=req.query;
 
     if(!title || !level)
@@ -237,6 +239,10 @@ if(title)
 if(level)
 {
     searchquery.courselevel={$regex:new RegExp(level,'i')}
+}
+if(duration)
+{
+    searchquery.durationInMonths={$regex:new RegExp(duration,'i')}
 }
 
 // excluded lectures before enrollment
