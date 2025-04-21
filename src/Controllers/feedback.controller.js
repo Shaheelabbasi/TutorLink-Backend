@@ -78,6 +78,30 @@ if (differnceInDays < requiredDays) throw new ApiError(`you can provide feedback
 })
 
 
+// adding a route for the home page to view feedback
+
+
+const getFeedback=asyncHandler(async(req,res)=>{
+
+    const limit=3
+
+    const {page}=req.query
+    const skip=(page-1)*limit
+
+const publicfeedbacks=await Feedback.find({}).populate("userId","fullname Profilepicture").skip(skip).limit(3)
+if(publicfeedbacks.length ==0)
+{
+    throw new ApiError(500,"no feedbacks to show")
+}
+return res.json(
+    new ApiResponse(
+        200,
+        publicfeedbacks,
+        "fetched feedbacks successfully"
+    )
+)
+})
+
 
 
 

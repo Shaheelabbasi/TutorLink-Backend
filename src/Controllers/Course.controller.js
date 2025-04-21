@@ -224,9 +224,9 @@ const searchCourse=asyncHandler(async(req,res)=>{
         duration
     }=req.query;
 
-    if(!title || !level)
+    if(!title)
         {
-            throw new ApiError("Search criteria is required")
+            throw new ApiError(400,"Search criteria is required")
         } 
 const searchquery={};
 if(title)
@@ -242,14 +242,14 @@ if(level)
 }
 if(duration)
 {
-    searchquery.durationInMonths={$regex:new RegExp(duration,'i')}
+    searchquery.durationInMonths=Number(duration)
 }
 
 // excluded lectures before enrollment
 // lectures will be made available after enrollment
     const searchResult=await Course.find(searchquery,"-lectures -createdAt -updatedAt -price").populate({
          path:"Instructor",
-        select:"username Profilepicture"
+        select:"fullname Profilepicture"
     })
 
     if(!searchResult.length>0)
