@@ -18,11 +18,11 @@ app.use(cors({
 
 
 
-
 // Set up JSON and URL-encoded form body parsing
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static("Public"))
+
+app.use("/static",express.static(path.join(__dirname,"public")))
 // Routers
 const {StudentRouter}=require("./Routes/Student.router.js")
 const {TeacherRouter}=require("./Routes/Teacher.router.js")

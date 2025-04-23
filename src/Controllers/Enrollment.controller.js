@@ -8,12 +8,10 @@ const { populate } = require("dotenv")
 
 const EnrollCourse=asyncHandler(async (req,res) => {
     
-  const {title,teachername}=req.body
+  const {title,teacherid}=req.body
 
   //check for the username
-const validInstructor=await User.findOne({
-    fullname:teachername
-})
+const validInstructor=await User.findById(teacherid)
 
 if(!validInstructor)
 {
@@ -57,6 +55,7 @@ if(!newEnrollment)
 {
     throw new ApiError(400,"something went wrong while enrolling cousrse")
 }
+
 
 
 // we are returning the courseid here we will have to store

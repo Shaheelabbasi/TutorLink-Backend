@@ -267,7 +267,6 @@ if(duration)
 })
 
 
-
 const GetCourseLectures=asyncHandler(async(req,res)=>{
 
 const {courseId}=req.body;

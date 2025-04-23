@@ -7,19 +7,24 @@ const ApiResponse=require("../Utils/Apiresponse.js")
 //end point when the teacher views profile from the dashboard
 // as well as when someone clicks on view profile from the 
 // course card
+// for students
 const ViewTeacherProfile=asyncHandler(async(req,res)=>{
 
+    console.log("id here is ",req.query.id)
     const Profile=await TeacherProfile.findOne({
-        user:req.user?._id || req.query?.InstructorId
+        user: req.query?.id
     }).populate({
         path:"user",
-        select:"username Profilepicture"
+        select:"username fullname Profilepicture email"
     }).populate({
           path:"education",
-        select:"degreeLevel Institute startYear endYear"
+        select:"degreeLevel Institute startYear endYear fieldOfStudy"
     }).populate({
          path:"courses",
         select:"courseTitle description Thumbnail price courselevel durationInMonths"
+    }).populate({
+        path:"feedback",
+        select:"content stars"
     })
     
     if(!Profile)

@@ -15,6 +15,7 @@ const {askQuestion,viewCommunity,viewAskedQuestions,editPostedQuestion,deletePos
 const { handleMulterError } = require("../Middlewares/errorhandler.middleware.js")
 
 const {ProvideFeedback}=require('../Controllers/feedback.controller.js')
+const { ViewTeacherProfile } = require("../Controllers/Profile.controller.js")
 
 StudentRouter.post("/signup",fileUpload.single("profile"),UserSignUp)
 StudentRouter.post("/login",UserSignIn)
@@ -41,6 +42,10 @@ StudentRouter.delete("/delete-question",verifyJwt,IsStudent,IsStudentEnrolled,de
 
 StudentRouter.post("/provide-feedback",
     verifyJwt,IsStudent,IsStudentEnrolled,ProvideFeedback)
+
+
+    //route to view teacher profile
+    StudentRouter.get("/view-profile", ViewTeacherProfile)
 module.exports={
     StudentRouter
 }
