@@ -15,6 +15,7 @@ const RequestLiveSession = asyncHandler(async (req, res, next) => {
     //enrolled course id would be stored on frontend and included in each request
     const { courseId, requestedDate, requestedTime, topic } = req.body;
 
+    console.log("req.body here is ",req.body)
     if (!courseId || !requestedDate || !requestedTime || !topic) {
         throw new ApiError(400, "All fields are required")
     }
@@ -289,10 +290,35 @@ const scheduleLiveSession = asyncHandler(async (req, res) => {
         ))
 })
 
+// for the students to view the live session request they sent
+
+
+const ViewSentRequests=asyncHandler(async(req,res)=>{
+
+    const {studentid}=req.query
+
+    const requestdetails=await LiveSessionRequest.find({
+         studentId:studentid
+    })
+
+    if(requestdetails.length==0)
+    {
+        throw new ApiError(404,"no session requests yet")
+    }
+
+    return res.json(
+        new ApiResponse(
+            200,
+            requestdetails,
+            "fetched requests successfully"
+        )
+    )
+})
 module.exports = {
     RequestLiveSession,
     ViewLiveSessionRequests,
     UpdateRequestStatus,
     ViewScheduledLiveSessions,
-    scheduleLiveSession
+    scheduleLiveSession,
+    ViewSentRequests
 }

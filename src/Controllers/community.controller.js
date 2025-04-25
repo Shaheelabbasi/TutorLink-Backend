@@ -151,7 +151,7 @@ const viewCommunity=asyncHandler(async(req,res)=>{
 //fetch all the questions for a particular course 
 
 
-const{courseId}=req.body
+const courseId= req.query.courseId
 //getting the courseID from the courseTitle
 
 if(!courseId)
@@ -162,7 +162,7 @@ if(!courseId)
 const questions=await CommunityQuestions.find({
 courseId:courseId,
 //answer:null
-}).populate("studentId","username").
+}).populate("studentId","username fullname Profilepicture").
 populate("answer","content media")
 
 if(!questions)
@@ -301,7 +301,6 @@ const deletePostedQuestion=asyncHandler(async(req,res)=>{
     )
 
 })
-
 
 
 module.exports={

@@ -12,18 +12,18 @@ const EducationSchema = new mongoose.Schema({
   degreeLevel: {
     type: String,
     required: true,
-    enum: ["Associate", "Bachelors", "Masters", "Doctorate", "Diploma", "Certification"]
+    enum: ["Associate", "Bachelors", "Masters", "Doctorate", "Diploma",]
   },
   Institute: {
     type: String,
     required: true
   },
   startYear: {
-    type: String,
+    type: Date,
     required: true
   },
   endYear: {
-    type: String,
+    type: Date,
     required: true
   }
 })

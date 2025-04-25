@@ -17,27 +17,27 @@ const addEducationalDetails = asyncHandler(async (req, res) => {
         endYear,
     } = req.body
 
-
-    if ([fieldOfStudy, degreeLevel, Institute, startYear, endYear].some((value) => value.trim() == "")) {
+ 
+    if ([fieldOfStudy, degreeLevel, Institute].some((value) => value.trim() == "")) {
         throw new ApiError(400, "All the fields are required")
     }
 
-    if (endYear < startYear) {
+    if (new Date(endYear).getFullYear() < new Date(startYear).getFullYear()) {
         throw new ApiError(400, "End year must be greater than start year")
     }
     const currentYear = new Date().getFullYear()
 
 
     if (degreeLevel == "Bachelors") {
-        if (endYear - startYear != 4) {
+        if (new Date(endYear).getFullYear() - new Date(startYear).getFullYear() != 4) {
             throw new ApiError(400, "Years must have a difference of four")
         }
-        if (endYear > currentYear) {
+        if (new Date(endYear).getFullYear() > currentYear) {
             throw new ApiError(400, `Graduation must be completed before ${currentYear}`)
         }
     }
 
-    if (degreeLevel == "Masters" && (endYear - startYear != 1)) {
+    if (degreeLevel == "Masters" && ( new Date(endYear).getFullYear() - new Date(startYear).getFullYear() != 1)) {
 
         throw new ApiError(400, "please enter valid year values for Masters")
     }

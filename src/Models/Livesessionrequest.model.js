@@ -16,7 +16,7 @@ const LiveSessionRequestSchema = new mongoose.Schema({
         required: true,
     },
     requestedTime: {
-        type: String, // Preferred time for the session
+        type: Date, // Preferred time for the session
         required: true,
     },
     topic: {

@@ -10,7 +10,6 @@ const ApiResponse=require("../Utils/Apiresponse.js")
 // for students
 const ViewTeacherProfile=asyncHandler(async(req,res)=>{
 
-    console.log("id here is ",req.query.id)
     const Profile=await TeacherProfile.findOne({
         user: req.query?.id
     }).populate({
@@ -24,7 +23,13 @@ const ViewTeacherProfile=asyncHandler(async(req,res)=>{
         select:"courseTitle description Thumbnail price courselevel durationInMonths"
     }).populate({
         path:"feedback",
-        select:"content stars"
+        select:"content stars",
+        populate:{
+         path:"userId",
+         select:"username fullname "
+        }
+   
+        
     })
     
     if(!Profile)

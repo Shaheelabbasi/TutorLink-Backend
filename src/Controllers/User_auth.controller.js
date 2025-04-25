@@ -144,10 +144,38 @@ res.clearCookie("accessToken",options).json(new ApiResponse(200,{},"loggedout su
 
 })
 
+const fetchUserDetails=asyncHandler(async(req,res)=>{
+   const userId= req.query.userId
+ console.log("user id is ",userId)
+   if(!userId)
+   {
+    throw new ApiError(400,"user id is required")
+   }
+
+   const userdetails=await User.findById(userId).select("+password")
+
+   if(!userdetails){
+    throw new ApiError(400,"user not found")
+   }
+
+   return res.json(new ApiResponse(
+    200,
+    userdetails,
+    "fetched user details successfully"
+   ))
+})
+
+
+const UpdateUserDetails=asyncHandler(async(req,res)=>{
+
+
+
+})
 
 module.exports={
     UserSignUp,
     UserSignIn,
-    UserSignOut
+    UserSignOut,
+    fetchUserDetails
 
 }

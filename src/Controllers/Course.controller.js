@@ -8,14 +8,17 @@ const {TeacherProfile}=require("../Models/Teacherprofile.model.js")
 const {CourseEnrollment}=require("../Models/Enrollment.model.js")
 const createCourse=asyncHandler(async(req,res)=>{
 
-//    const courseLimit=2
 
+    //console.log("data received in create course is ",req.body)
+//    const courseLimit=2
+  
     if(!req.files['lectures'])
     {
         throw new ApiError(400,"You must add the lecture files")
         
     }
   
+
     if(!req.files['thumbnail'])
         {
             throw new ApiError(400,"You must add the course thumbnail")
@@ -25,7 +28,6 @@ const createCourse=asyncHandler(async(req,res)=>{
     const {
         courseTitle,
         description,
-        price,
         courselevel,
         enrollmentStart,
         enrollmentEnd,
@@ -33,7 +35,7 @@ const createCourse=asyncHandler(async(req,res)=>{
     }=req.body
     
 
-    if(!courseTitle || !description  || !price || !durationInMonths || !enrollmentStart || !enrollmentEnd){
+    if(!courseTitle || !description || !durationInMonths || !enrollmentStart || !enrollmentEnd){
         throw new ApiError(400,"All fields are required")
     }
 
@@ -71,7 +73,6 @@ const createdCourse=await Course.create({
         courseTitle,
         description,
         Thumbnail:Thumbnailfile?.url,
-        price,
         lectures:lectureUrls.map((url)=>({content:url})),
         durationInMonths,
         courselevel,
@@ -201,7 +202,7 @@ const GetAllCourses=asyncHandler(async(req,res)=>{
 
     const allCourses=await Course.find({
         Instructor:req.user?._id
-    }).select("courseTitle")
+    }).select("courseTitle courselevel createdAt ")
 
     if(!allCourses)
     {

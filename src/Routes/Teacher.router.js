@@ -11,6 +11,8 @@ const {ViewTeacherProfile}=require("../Controllers/Profile.controller.js")
 const {IsTeacher}=require("../Middlewares/IsTeacher.middleware.js")
 const {ViewLiveSessionRequests,UpdateRequestStatus,ViewScheduledLiveSessions,scheduleLiveSession}=require("../Controllers/Livesession.controller.js")
 const {postAnswer,viewCommunity,ViewQuestions}=require("../Controllers/community.controller.js")
+const {getTeacherOnboardingStatus}=require("../Controllers/OnBoarding.controller.js")
+
 // in case of error in fileupload Signup is skipped and automatically 
 // last error handler is called 
 TeacherRouter.post("/signup", fileUpload.single("profilepicture"), UserSignUp, (error, req, res) => {
@@ -40,9 +42,10 @@ TeacherRouter.post("/view-scheduled-sessions",verifyJwt,IsTeacher,ViewScheduledL
 TeacherRouter.post("/schedule-live-session",verifyJwt,IsTeacher,scheduleLiveSession)
 TeacherRouter.post("/post-answer",verifyJwt,IsTeacher,fileUpload.fields([{name:"answer_media",maxCount:3}]),postAnswer,handleMulterError)
 
+
 //fetched all the  questions for a particular course that are not answered
 TeacherRouter.post("/view-all-questions",verifyJwt,IsTeacher,ViewQuestions)
-
+TeacherRouter.get("/getOnBoardingStatus",verifyJwt,IsTeacher,getTeacherOnboardingStatus)
 
 
 
