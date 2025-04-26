@@ -1,7 +1,7 @@
 const express=require("express")
 
 const StudentRouter=express.Router()
-const { UserSignUp,UserSignIn,UserSignOut,fetchUserDetails,}=require("../Controllers/User_auth.controller.js")
+const { UserSignUp,UserSignIn,UserSignOut,fetchUserDetails,UpdateUserDetails}=require("../Controllers/User_auth.controller.js")
 
 const {searchCourse,GetCourseLectures}=require('../Controllers/Course.controller.js')
 const {fileUpload}=require("../Middlewares/upload.js")
@@ -19,6 +19,7 @@ const { ViewTeacherProfile } = require("../Controllers/Profile.controller.js")
 
 StudentRouter.post("/signup",fileUpload.single("profile"),UserSignUp)
 StudentRouter.post("/login",UserSignIn)
+StudentRouter.put("/update-user",fileUpload.single("profile"),verifyJwt,IsStudent,IsStudentEnrolled,UpdateUserDetails)
 StudentRouter.post("/logout",verifyJwt,UserSignOut)
 
 StudentRouter.get("/search-course",searchCourse)

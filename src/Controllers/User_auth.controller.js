@@ -168,14 +168,44 @@ const fetchUserDetails=asyncHandler(async(req,res)=>{
 
 const UpdateUserDetails=asyncHandler(async(req,res)=>{
 
+   const {fullname,email,userId}=req.body
 
+   
+   let profile=null
+   if (req.file)
+   {
+       profile=await uploadOnCloudnary(req.file.path)
+   }
 
+   const updatedUser = await User.findByIdAndUpdate(
+    userId,
+    {
+      fullname,
+      email,
+     Profilepicture:profile?.url
+    },
+    { new: true }
+  )
+
+  if(!updatedUser)
+  {
+    throw new ApiError(500,"something went wrong while updating profile")
+  }
+
+  return res.json(
+    new ApiResponse(
+      200,
+      updatedUser,
+      "user details updated successfully"
+    )
+  )
 })
 
 module.exports={
     UserSignUp,
     UserSignIn,
     UserSignOut,
-    fetchUserDetails
+    fetchUserDetails,
+    UpdateUserDetails
 
 }

@@ -10,13 +10,15 @@ const { Course } = require("../Models/Course.model.js")
 
 const ProvideFeedback=asyncHandler(async(req,res)=>{
     //we will get the userid from the req object
-const{courseId,content,stars}=req.body
+const content=req.body.content
+const stars=req.body.rating
+const courseId=req.query.courseId
 
 // we make logic that if if half duration of the course is gone
 // than a user can provide feedback
 
-
-if(!courseId || !content ||!stars)
+console.log("user id heer is ",req.user._id)
+if(!content ||!stars)
 {
     throw new ApiError(400,"you must provide content and stars")
 }
@@ -40,7 +42,7 @@ const requiredDays= courseDuration *15
 if (differnceInDays < requiredDays) throw new ApiError(`you can provide feedback after ${requiredDays} days of enrollment`)
 
 
-        const existingFeedback=await Feedback.findOne({courseId:courseId,userId:req.user?._id})
+        const existingFeedback=await Feedback.findOne({CourseId:courseId,userId:req.user?._id})
 
         if(existingFeedback ) throw new ApiError (400,"feedback already exists")
 

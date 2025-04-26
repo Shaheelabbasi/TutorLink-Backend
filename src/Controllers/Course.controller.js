@@ -268,9 +268,10 @@ if(duration)
 })
 
 
+
 const GetCourseLectures=asyncHandler(async(req,res)=>{
 
-const {courseId}=req.body;
+const courseId= req.query.courseId;
 
 if(!courseId)
 {
@@ -283,7 +284,7 @@ const CousreData=await Course.findById(courseId)
 
 res.json(new ApiResponse(
     200,
-    CousreData.lectures,
+    CousreData,
     "successfully fetched lectures"
 ))
 
