@@ -145,8 +145,8 @@ res.clearCookie("accessToken",options).json(new ApiResponse(200,{},"loggedout su
 })
 
 const fetchUserDetails=asyncHandler(async(req,res)=>{
+
    const userId= req.query.userId
- console.log("user id is ",userId)
    if(!userId)
    {
     throw new ApiError(400,"user id is required")

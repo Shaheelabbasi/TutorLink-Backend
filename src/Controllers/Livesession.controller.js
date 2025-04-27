@@ -99,6 +99,8 @@ const UpdateRequestStatus = asyncHandler(async (req, res) => {
 
 
     const { requestId, status } = req.body
+  
+    console.log("status recievd here is ",status)
 
 
     if (!status || !requestId) {
@@ -115,7 +117,6 @@ const UpdateRequestStatus = asyncHandler(async (req, res) => {
 
     const ValidRequest = await LiveSessionRequest.findById(requestId).populate("studentId", "fullname email").populate(deepPopulateQuery)
 
-    console.log("valid request here is ",ValidRequest)
     // console.log("The valid request is ",ValidRequest)
     //here we need to get the list of all the students enrolled for a particular course
     //we will have to notify every student even if a single request is accepted
@@ -127,6 +128,7 @@ const UpdateRequestStatus = asyncHandler(async (req, res) => {
     const { email: Instructoremail, fullname: Instructorname } = ValidRequest.courseId.Instructor
     const { requestedDate: scheduledDate, requestedTime: scheduledTime, topic } = ValidRequest
 
+    console.log("requested time here is ",scheduledTime)
     if (status.toLowerCase() == "approved") {
 
         ValidRequest.status = "Approved"
@@ -147,6 +149,9 @@ const UpdateRequestStatus = asyncHandler(async (req, res) => {
         if (!createdliveSession) {
             throw new ApiError(500, "something went wrong while scheduling the live session")
         }
+        //binding the request with the live session
+        ValidRequest.liveSession=createdliveSession._id
+        await ValidRequest.save({new :true})
         const enrolledStudents = await getEnrolledStudents(ValidRequest.courseId)
         //send scheduling notifications to all the students
         enrolledStudents.map((enrolled) => {
@@ -164,7 +169,12 @@ const UpdateRequestStatus = asyncHandler(async (req, res) => {
         if (!IsTeacherNotified) {
             throw new ApiError(500, "something went wrong while sending email notifications")
         }
-
+      return res.json(
+        new ApiResponse(201,
+            createdliveSession,
+            "live session created successfully"
+        )
+      )
     }
     if (status.toLowerCase() == "rejected") {
         //handle the request rejecetion scenario
@@ -177,31 +187,28 @@ const UpdateRequestStatus = asyncHandler(async (req, res) => {
         if (!Isnotified) {
             throw new ApiError(500, "something went wrong while sending email notification")
         }
-
-
-    }
-
-    res.json(
-        new ApiResponse(
-            200,
-            ValidRequest,
-            "updated request status successfully",
-
+        res.json(
+            new ApiResponse(
+                200,
+                ValidRequest,
+                "updated request status successfully",
+    
+            )
         )
-    )
-
+    
+    }
 
 })
 
 
 const ViewScheduledLiveSessions = asyncHandler(async (req, res) => {
 
-    const { courseId } = req.body
+    const  courseId  = req.query.courseId
     const scheduledSessions = await LiveSession.find({
         courseId: courseId
-    }).populate("courseId", "courseTitle")
+    })
 
-    if (!scheduledSessions) {
+    if (scheduledSessions.length==0) {
         throw new ApiError(400, "No live sessions scheduled")
     }
 
@@ -216,8 +223,11 @@ const ViewScheduledLiveSessions = asyncHandler(async (req, res) => {
 })
 
 
+
 const scheduleLiveSession = asyncHandler(async (req, res) => {
 
+    console.log("i ahve been called")
+    console.log(" body heer is ",req.body)
     const {
         courseId,
         topic,
@@ -299,7 +309,7 @@ const ViewSentRequests=asyncHandler(async(req,res)=>{
 
     const requestdetails=await LiveSessionRequest.find({
          studentId:studentid
-    })
+    }).populate("liveSession","join_url")
 
     if(requestdetails.length==0)
     {
@@ -314,6 +324,7 @@ const ViewSentRequests=asyncHandler(async(req,res)=>{
         )
     )
 })
+
 module.exports = {
     RequestLiveSession,
     ViewLiveSessionRequests,

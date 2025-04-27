@@ -112,22 +112,24 @@ return res.json(
 })
 
 const addLectures=asyncHandler(async(req,res)=>{
+    console.log("add leccures function called ")
     if(!req.files['lectures'])
         {
             throw new ApiError(400,"You must add the lecture files")
         }
     const {
-        courseTitle
+        courseId
     }=req.body
 
-    if(!courseTitle)
+    if(!courseId)
     {
-      throw new ApiError(400,"all fields are required")
+      throw new ApiError(400,"course id required")
     }
 
 const  ExistingCourse=await Course.findOne({
+    _id:courseId,
     Instructor:req.user?._id,
-    courseTitle
+    
 })
 if(!ExistingCourse)
 {
@@ -328,6 +330,36 @@ const [finalenrols]=enrollments
     )
 })
 
+
+const ViewCourseDetails=asyncHandler(async(req,res)=>{
+
+    const courseId=req.query.courseId
+
+    const coursedetails=await Course.findOne({
+        _id:courseId
+    }).select("courseTitle description courselevel enrollmentStart lectures")
+
+    
+    if(!coursedetails)
+    {
+        return res.json(
+            new ApiResponse(
+                200,
+                {},
+                "no course found "
+            )
+        )
+    }
+
+    return res.json(
+        new ApiResponse(
+            200,
+            coursedetails,
+            "fetched course details successfully"
+        )
+    )
+})
+
 module.exports={
     createCourse,
     addLectures,
@@ -335,5 +367,7 @@ module.exports={
     GetAllCourses,
     searchCourse,
     GetCourseLectures,
-    ViewCourseEnrollments
+    ViewCourseEnrollments,
+    ViewCourseDetails
+    
 }

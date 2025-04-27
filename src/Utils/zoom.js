@@ -91,8 +91,8 @@ const ScheduleMeeting=async(topic,scheduledTime,scheduledDate)=>{
   try {
     const access_token= await GenerateAccessToken();
     const formatted_date=new Date(scheduledDate).toISOString().split("T")[0]
-    const start_time = new Date(`${formatted_date}T${scheduledTime}:00.000+05:00`).toISOString()
-    
+   // const start_time = //new Date(`${formatted_date}T${scheduledTime}:00.000+05:00`).toISOString()
+    const start_time=scheduledTime
   const meetingdata={
     topic: topic,
     type: 2, // Scheduled meeting

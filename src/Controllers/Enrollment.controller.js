@@ -157,12 +157,42 @@ const getEnrolledStudents=async(courseId)=>{
 }
 
 
+//view enrollment details for a particular course
 
+const ViewEnrollmentDetails=asyncHandler(async(req,res)=>{
+
+    const courseId=req.query.courseId
+
+const enrollmentDetails=await CourseEnrollment.find({
+    CourseId:courseId
+}).populate("StudentId","fullname username Profilepicture email")
+
+
+if(enrollmentDetails.length==0)
+{
+  return  res.json(
+        new ApiResponse(
+            200,
+            [],
+            "no enrolled students"
+        )
+    )
+}
+
+return res.json(
+    new ApiResponse(
+        200,
+        enrollmentDetails,
+        "fetched enrollments successfully"
+    )
+)
+})
 
 // console.log("enolled students are ",ans)
 
 module.exports={
     EnrollCourse,
     viewEnrolledCourses,
-    getEnrolledStudents
+    getEnrolledStudents,
+    ViewEnrollmentDetails
 }

@@ -28,7 +28,13 @@ const LiveSessionRequestSchema = new mongoose.Schema({
         enum: ["Pending", "Approved", "Rejected"],
         default: "Pending",
     },
+    //adding a live session refrence here for the approve requests
+    liveSession:{
+        type: mongoose.Types.ObjectId,
+        ref: "LiveSession", 
+    }
 }, { timestamps: true });
+
 
 const LiveSessionRequest = mongoose.model("LiveSessionRequest", LiveSessionRequestSchema);
 

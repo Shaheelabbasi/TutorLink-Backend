@@ -104,10 +104,38 @@ return res.json(
 )
 })
 
+// function for teacherdashboard to view feedback on a particular course
+const ViewFeedback=asyncHandler(async(req,res)=>{
+const courseId=req.query.courseId
 
+const feedbackresults=await Feedback.find({
+    CourseId:courseId
+}).populate("userId","Profilepicture fullname username")
+
+if(!feedbackresults)
+{
+    return res.json(
+        new ApiResponse(
+            404,
+            {},
+            "no feedback yet"
+        )
+    )
+}
+
+return res.json(
+    new ApiResponse(
+        200,
+        feedbackresults,
+        "fetched feedback successfully"
+    )
+)
+
+})
 
 
 module.exports={
 
-    ProvideFeedback
+    ProvideFeedback,
+    ViewFeedback
 }

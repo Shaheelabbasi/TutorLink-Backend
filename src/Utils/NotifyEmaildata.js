@@ -164,7 +164,8 @@ module.exports={
   GenerateLiveSessionRequestEmailText,
   GenerateLiveSessionRequestStatusEmail,
   GenerateTeacherSessionNotificationEmail,
-  GenerateCommunityNotificationEmail
+  GenerateCommunityNotificationEmail,
+  GenerateStudentNotificationEmail
 
 
 

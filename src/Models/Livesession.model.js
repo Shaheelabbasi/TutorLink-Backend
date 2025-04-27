@@ -15,7 +15,7 @@ const LiveSessionSchema = new mongoose.Schema({
         required: true
     },
     scheduledTime: {
-        type: String, // e.g., "14:30" for 2:30 PM
+        type: Date,
         required: true
     },
     join_url: {

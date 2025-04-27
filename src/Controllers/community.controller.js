@@ -83,6 +83,11 @@ if(!content)
     throw new ApiError(400,"answer  content is required")
 }
 
+const existingAnswer=await CommunityQuestions.findById(questionId)
+if(existingAnswer.answer!=null)
+{
+    throw new ApiError(400,"answer already exists")
+}
 let answerMediaUrls=[]
 if(req.files['answer_media'])
 {
@@ -103,6 +108,8 @@ if(!validQuestion)
 
     throw new ApiError(400,"no question found")
 }
+
+// check that this question has an answer already
 
 const createdAnswer=await CommunityAnswers.create({
     teacherId:req.user?._id,
@@ -163,7 +170,14 @@ const questions=await CommunityQuestions.find({
 courseId:courseId,
 //answer:null
 }).populate("studentId","username fullname Profilepicture").
-populate("answer","content media")
+populate("answer","content media").populate({
+    path:"courseId",
+    select:"Instructor",
+    populate:{
+    path:"Instructor",
+    select:"username fullname ProfilePicture"
+    }
+})
 
 if(!questions)
 {
@@ -181,25 +195,26 @@ res.json(
 
 // route for the teacher to view all the asked questions for a particular cousre
 const ViewQuestions=asyncHandler(async(req,res)=>{
-    const{courseId}=req.body
+    const courseId=req.query.courseId
     //getting the courseID from the courseTitle
-    
+
     if(!courseId)
     {
         throw new ApiError(400,"courseId is required")
     }
+
     
     const questions=await CommunityQuestions.find({
     courseId:courseId,
     answer:null
-    }).populate("studentId","username")
+    }).populate("studentId","username fullname Profilepicture")
     
     if(questions.length ==0)
     {
-        res.json(
+       return res.json(
             new ApiResponse(
                 200,
-                {},
+                [],
                 "no unasnwered questions "
             )
         )
@@ -210,7 +225,7 @@ const ViewQuestions=asyncHandler(async(req,res)=>{
         throw new ApiError(400,"no questions have been posted")
     }
     
-    res.json(
+  return  res.json(
         new ApiResponse(
             200,
             questions,
@@ -303,6 +318,24 @@ const deletePostedQuestion=asyncHandler(async(req,res)=>{
 })
 
 
+// route for the teacher to view the questions that have been answered
+
+const ViewAnswerdQuestions=asyncHandler(async(req,res)=>{
+console.log("i m called")
+    const courseId=req.query.courseId
+    const myquestions=await CommunityQuestions.find({
+        courseId:courseId
+    }).populate("answer","content media")
+
+    return res.json(
+        new ApiResponse(
+            200,
+            myquestions,
+            "fetched all the answered questions"
+        )
+    )
+})
+
 module.exports={
     askQuestion,
     postAnswer,
@@ -310,7 +343,8 @@ module.exports={
     ViewQuestions,
     viewAskedQuestions,
     editPostedQuestion,
-    deletePostedQuestion
+    deletePostedQuestion,
+    ViewAnswerdQuestions
 
 
 }
