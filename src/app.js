@@ -27,7 +27,9 @@ app.use("/static",express.static(path.join(__dirname,"public")))
 // Routers
 const {StudentRouter}=require("./Routes/Student.router.js")
 const {TeacherRouter}=require("./Routes/Teacher.router.js")
+const {AdminRouter}=require("./Routes/admin.router.js")
+
 app.use("/api/Student",StudentRouter)
 app.use("/api/Teacher",TeacherRouter)
-
+app.use("/api/admin",AdminRouter)
 module.exports = app;

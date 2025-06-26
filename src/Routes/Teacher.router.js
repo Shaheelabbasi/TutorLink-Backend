@@ -14,7 +14,7 @@ const {postAnswer,viewCommunity,ViewQuestions,ViewAnswerdQuestions}=require("../
 const {getTeacherOnboardingStatus}=require("../Controllers/OnBoarding.controller.js")
 const { ViewFeedback } = require("../Controllers/feedback.controller.js")
 const { ViewEnrollmentDetails } = require("../Controllers/Enrollment.controller.js")
-
+const IsRestricted = require("../Middlewares/IsRestricted.middleware.js")
 // in case of error in fileupload Signup is skipped and automatically 
 // last error handler is called 
 TeacherRouter.post("/signup", fileUpload.single("profilepicture"), UserSignUp, (error, req, res) => {
@@ -26,7 +26,7 @@ TeacherRouter.post("/signup", fileUpload.single("profilepicture"), UserSignUp, (
             message: error.message
         })}
 })
-TeacherRouter.post("/login", UserSignIn)
+TeacherRouter.post("/login",IsRestricted,UserSignIn)
 TeacherRouter.post("/logout", UserSignOut)
 // private routes for teacher
 TeacherRouter.post("/addEducation", verifyJwt, addEducationalDetails)

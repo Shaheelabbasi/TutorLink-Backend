@@ -201,11 +201,68 @@ const UpdateUserDetails=asyncHandler(async(req,res)=>{
   )
 })
 
+
+const ResetPassword=asyncHandler(async(req,res)=>{
+
+  const {email,newPassword}=req.body
+
+  console.log("email received here is ",email,newPassword)
+  if(!newPassword)
+  {
+    throw new ApiError(400,"password is required")
+  }
+
+  const Isexisting=await User.findOne({email:email})
+
+  Isexisting.password=newPassword
+  
+  await Isexisting.save()
+
+
+  return res.json(
+    new ApiResponse(
+      200,
+     Isexisting,
+     "reset password successfully"
+    )
+  )
+
+
+})
+
+const CheckEmail=asyncHandler(async(req,res)=>{
+
+  const {email}=req.body
+
+  if(!email)
+  {
+    throw new ApiError(400,"Email is required")
+  }
+
+  const Isexisting=await User.findOne({email:email})
+
+  if(!Isexisting)
+  {
+    throw new ApiError(400,"email does not exist")
+  }
+
+  return res.json(
+    new ApiResponse(
+      200,
+     Isexisting,
+     "fetched email successfully"
+    )
+  )
+
+
+})
 module.exports={
     UserSignUp,
     UserSignIn,
     UserSignOut,
     fetchUserDetails,
-    UpdateUserDetails
+    UpdateUserDetails,
+    CheckEmail,
+    ResetPassword
 
 }

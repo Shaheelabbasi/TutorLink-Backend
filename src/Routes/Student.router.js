@@ -1,7 +1,7 @@
 const express=require("express")
 
 const StudentRouter=express.Router()
-const { UserSignUp,UserSignIn,UserSignOut,fetchUserDetails,UpdateUserDetails}=require("../Controllers/User_auth.controller.js")
+const { UserSignUp,UserSignIn,UserSignOut,fetchUserDetails,UpdateUserDetails,CheckEmail,ResetPassword}=require("../Controllers/User_auth.controller.js")
 
 const {searchCourse,GetCourseLectures}=require('../Controllers/Course.controller.js')
 const {fileUpload}=require("../Middlewares/upload.js")
@@ -16,12 +16,14 @@ const { handleMulterError } = require("../Middlewares/errorhandler.middleware.js
 
 const {ProvideFeedback}=require('../Controllers/feedback.controller.js')
 const { ViewTeacherProfile } = require("../Controllers/Profile.controller.js")
-
+const {reportProblemForStudent}=require("../Controllers/problem.controller.js")
+const IsRestricted = require("../Middlewares/IsRestricted.middleware.js")
 StudentRouter.post("/signup",fileUpload.single("profile"),UserSignUp)
-StudentRouter.post("/login",UserSignIn)
+StudentRouter.post("/login",IsRestricted,UserSignIn)
 StudentRouter.put("/update-user",fileUpload.single("profile"),verifyJwt,IsStudent,IsStudentEnrolled,UpdateUserDetails)
 StudentRouter.post("/logout",verifyJwt,UserSignOut)
-
+StudentRouter.post("/check-email",CheckEmail)
+StudentRouter.post("/reset-password",ResetPassword)
 StudentRouter.get("/search-course",searchCourse)
 StudentRouter.post("/enroll-course",verifyJwt,IsStudent,EnrollCourse)
 StudentRouter.get("/get-course-lectures",verifyJwt,IsStudentEnrolled,GetCourseLectures)
@@ -53,6 +55,8 @@ StudentRouter.post("/provide-feedback",
     //route to fetch user details for the profile page in dashboard
 
     StudentRouter.get("/fetch-userdetails",verifyJwt,IsStudentEnrolled,fetchUserDetails)
+
+    StudentRouter.post("/report-problem",verifyJwt,reportProblemForStudent)
 module.exports={
     StudentRouter
 }

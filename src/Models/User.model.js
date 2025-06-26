@@ -28,6 +28,10 @@ const UserSchema=new mongoose.Schema({
         type:String,
         enum:['admin','student','teacher'],
         required:true
+    },
+    IsRestricted:{
+        type:Boolean,
+        default:false
     }
 
 },{timestamps:true})
