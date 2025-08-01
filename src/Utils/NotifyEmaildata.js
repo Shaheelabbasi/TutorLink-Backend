@@ -108,7 +108,7 @@ const GenerateStudentNotificationEmail=(studentName,courseTitle,topic,scheduledD
   <ul>
     <li><strong>topic:</strong> ${topic}</li>
     <li><strong>Scheduled Date:</strong> ${scheduledDate}</li>
-    <li><strong>Scheduled Time:</strong> ${scheduledTime}</li>
+    <li><strong>Scheduled Time:</strong> ${new Date(scheduledTime)}</li>
     <li><strong>Start Link:</strong> <a href="${join_url}" target="_blank">${join_url}</a></li>
   </ul>
 

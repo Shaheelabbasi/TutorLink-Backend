@@ -4,15 +4,20 @@ const {asyncHandler}=require("../Utils/asyncHandler.js");
 
 const IsRestricted=asyncHandler(async(req,res,next)=>{
 
-  const { email, password ,role} = req.body;
+  const { email, password} = req.body;
 
   const existingUser = await User.findOne({
     email,
-    role
   });
 
-  if(!existingUser.IsRestricted) {
-    next()
+ 
+  if(existingUser?.role=="admin"){
+ return next()
+ 
+  }
+  if(!existingUser?.IsRestricted) {
+   return  next()
+    
 }
 else{
     throw new Apierror(400,"canot login your account has been restricted")

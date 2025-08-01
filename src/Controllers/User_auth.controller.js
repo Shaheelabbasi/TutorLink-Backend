@@ -96,15 +96,15 @@ if(!teacherProfile)
 
 const UserSignIn=asyncHandler(async(req,res)=>{
   
-  const { email, password ,role} = req.body;
+   console.log("Called here ")
+  const { email, password} = req.body;
 
-  if (!email || ! password || !role) {
+  if (!email || ! password) {
     throw new ApiError(400, "email ,password and role are required");
   }
 
   const existingUser = await User.findOne({
     email,
-    role
   });
   if (!existingUser) {
     throw new ApiError(400, "User not found");
@@ -120,6 +120,7 @@ const UserSignIn=asyncHandler(async(req,res)=>{
   const AccessToken = existingUser.GenerateAccessToken();
   const safeUser = await User.findById(existingUser._id).select("-password -email");
   
+
   //maxage milli seconds was an issue
   const options={
     HttpOnly:true,
@@ -256,6 +257,27 @@ const CheckEmail=asyncHandler(async(req,res)=>{
 
 
 })
+
+
+const allUsers=asyncHandler(async(req,res)=>{
+
+  const allUsers = await User.find({
+  role: { $in: ['student', 'teacher'] }
+});
+
+if(allUsers.length==0){
+  throw new ApiError(400,"no users foudn")
+}
+
+return res.json(
+  new ApiResponse(
+    200,
+    allUsers,
+    "users ferched successfully"
+  )
+)
+
+})
 module.exports={
     UserSignUp,
     UserSignIn,
@@ -263,6 +285,8 @@ module.exports={
     fetchUserDetails,
     UpdateUserDetails,
     CheckEmail,
-    ResetPassword
+    ResetPassword,
+    allUsers
+    
 
 }

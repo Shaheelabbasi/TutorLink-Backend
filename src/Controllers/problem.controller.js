@@ -47,6 +47,7 @@ const reportProblemForStudent=asyncHandler(async(req,res)=>{
   const formatted = problems.map((problem, index) => ({
     problemId: problem._id,
     title: problem.title,
+    description:problem.description,
     reportedBy: `${problem.reportedBy.fullname} (${problem.reportedBy.role})`,
     reportedAgainst: `${problem.reportedAgainst.fullname} (${problem.reportedAgainst.role})`,
     status: problem.status,
@@ -66,10 +67,12 @@ const reportProblemForStudent=asyncHandler(async(req,res)=>{
 
 
 
+
+
 const restrictUser = asyncHandler(async (req, res) => {
  // const userId = req.params.id;
-  const { restrict,userId } = req.body; // true to restrict, false to unrestrict
-
+  const { restrict,userId ,complainId} = req.body; // true to restrict, false to unrestrict
+console.log("user id is ",userId)
   const user = await User.findById(userId);
 
   if (!user) {
@@ -79,6 +82,14 @@ const restrictUser = asyncHandler(async (req, res) => {
 
   user.IsRestricted = restrict;
   await user.save();
+
+  const complaint=await Problem.findById(complainId)
+
+  console.log("complain is ",complaint)
+ complaint.status="resolved"
+
+ await complaint.save()
+
 
   return res.json(
     new ApiResponse(
@@ -90,10 +101,36 @@ const restrictUser = asyncHandler(async (req, res) => {
 
 });
 
+const unRestrictUser = asyncHandler(async (req, res) => {
+ // const userId = req.params.id;
+  const {userId} = req.body; // true to restrict, false to unrestrict
+  const user = await User.findById(userId);
+
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  user.IsRestricted = false;
+  await user.save();
+
+
+  return res.json(
+    new ApiResponse(
+      200,
+      {},
+      `User has been unrestricted successfully.`
+    )
+  )
+
+});
+
+
 
 module.exports={
     reportProblemForStudent,
     getAllReportedProblems,
-    restrictUser
+    restrictUser,
 
+unRestrictUser
 }

@@ -56,7 +56,7 @@ StudentRouter.post("/provide-feedback",
 
     StudentRouter.get("/fetch-userdetails",verifyJwt,IsStudentEnrolled,fetchUserDetails)
 
-    StudentRouter.post("/report-problem",verifyJwt,reportProblemForStudent)
+    StudentRouter.post("/submit-complain",verifyJwt,reportProblemForStudent)
 module.exports={
     StudentRouter
 }

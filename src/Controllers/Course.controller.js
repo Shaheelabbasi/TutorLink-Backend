@@ -28,12 +28,13 @@ const createCourse=asyncHandler(async(req,res)=>{
     const {
         courseTitle,
         description,
-        courselevel,
+        courseLevel,
         enrollmentStart,
         enrollmentEnd,
         durationInMonths
     }=req.body
     
+    console.log("course level received here is ",courseLevel)
 
     if(!courseTitle || !description || !durationInMonths || !enrollmentStart || !enrollmentEnd){
         throw new ApiError(400,"All fields are required")
@@ -75,7 +76,7 @@ const createdCourse=await Course.create({
         Thumbnail:Thumbnailfile?.url,
         lectures:lectureUrls.map((url)=>({content:url})),
         durationInMonths,
-        courselevel,
+        courselevel:courseLevel,
         enrollmentStart,
         enrollmentEnd,
 })
@@ -108,6 +109,7 @@ return res.json(
         "course created successfully"
     )
 )
+
 
 })
 
