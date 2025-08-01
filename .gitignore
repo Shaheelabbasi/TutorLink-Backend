@@ -44,6 +44,7 @@ build/Release
 
 # Dependency directories
 node_modules/
+Public/
 public/
 jspm_packages/
 
@@ -143,3 +144,5 @@ dist
 .svelte-kit
 
 # End of https://www.toptal.com/developers/gitignore/api/node
+
+*.json
